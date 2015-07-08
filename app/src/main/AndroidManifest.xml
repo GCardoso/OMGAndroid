@@ -9,7 +9,7 @@
         android:required="true" />
     <uses-sdk
         android:targetSdkVersion="21"
-        android:minSdkVersion="16" />
+        android:minSdkVersion="14" />
     <application
 
         android:allowBackup="true"

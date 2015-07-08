@@ -2,6 +2,8 @@ package com.example.guilhermecardoso.omgandroid;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -10,6 +12,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +25,8 @@ import java.util.Date;
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
     TextView mainTextView;
     Button mainButton;
+    public static ImageView imageView;
+
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
 
     @Override
@@ -33,7 +38,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 // and listen for it here
         mainButton = (Button) findViewById(R.id.main_button);
         mainButton.setOnClickListener(this);
-
+        this.imageView = (ImageView)this.findViewById(R.id.imageViewPhotoTaken);
     }
 
     @Override
@@ -62,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        mCurrentPhotoPath =  image.getAbsolutePath();
         return image;
     }
 
@@ -113,6 +118,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+
+        File imgFile = new  File(mCurrentPhotoPath);
+        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+        int nh = (int) ( myBitmap.getHeight() * (512.0 / myBitmap.getWidth()) );
+        Bitmap scaled = Bitmap.createScaledBitmap(myBitmap, 512, nh, true);
+
+        imageView.setImageBitmap(scaled);
     }
 
     @Override
