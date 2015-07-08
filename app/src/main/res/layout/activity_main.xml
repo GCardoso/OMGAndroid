@@ -35,11 +35,5 @@
         <!-- Closing tag for the horizontal nested layout -->
     </LinearLayout>
     <!-- Displays keyboard when touched -->
-    <EditText
-        android:id="@+id/main_edittext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:hint="@string/hint" />
+
 </LinearLayout>

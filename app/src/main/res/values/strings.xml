@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">OMG Android</string>
+    <string name="app_name">PhotoGuide</string>
 
     <string name="textview">Aplicativo Teste</string>
     <string name="action_settings">Settings</string>
-    <string name="button">Update The TextView</string>
-    <string name="hint">A Name</string>
+    <string name="button">Take Picture</string>
+
 </resources>
