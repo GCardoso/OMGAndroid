@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,23 +26,28 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
     TextView mainTextView;
     Button mainButton;
     public static ImageView imageView;
-
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
+    SensorManager mSensorManager;
+    Sensor mSensor;
+    private float x,y,z;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 2. Access the Button defined in layout XML
-// and listen for it here
         mainButton = (Button) findViewById(R.id.main_button);
+        mainTextView = (TextView) findViewById(R.id.main_textview);
         mainButton.setOnClickListener(this);
         this.imageView = (ImageView)this.findViewById(R.id.imageViewPhotoTaken);
+
+        mSensorManager =  (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -124,8 +133,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         int nh = (int) ( myBitmap.getHeight() * (512.0 / myBitmap.getWidth()) );
         Bitmap scaled = Bitmap.createScaledBitmap(myBitmap, 512, nh, true);
-
         imageView.setImageBitmap(scaled);
+
+
+
+        mainTextView.setText("x = " + x + " y = " + y + " z = " + z);
     }
 
     @Override
@@ -133,5 +145,25 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         // Take what was typed into the EditText
         // and use in TextView
         dispatchTakePictureIntent();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        x = event.values[0];
+        y = event.values[1];
+        z = event.values[2];
+        System.out.println("x = " + x + " y = " + y + " z = " + z);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+    protected void onPause() {
+        super.onPause();
+    }
+
+    protected void onResume() {
+        super.onResume();
     }
 }
