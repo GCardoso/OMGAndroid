@@ -235,4 +235,3 @@ public class ServiceGPSTracker extends Service implements LocationListener{
         }
     }
 
-}
