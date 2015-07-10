@@ -33,6 +33,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public static ImageView imageView;
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
     SensorManager mSensorManager;
+    ServiceGPSTracker serviceGPS;
     Sensor mSensor;
     private float x,y,z;
 
@@ -41,15 +42,18 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainButton = (Button) findViewById(R.id.main_button);
-        mainTextViewAccelerometer = (TextView) findViewById(R.id.main_textview_accelerometer);
-        mainTextViewGPS = (TextView) findViewById(R.id.main_textview_gps);
+        mainButton                  = (Button) findViewById(R.id.main_button);
+        mainTextViewAccelerometer   = (TextView) findViewById(R.id.main_textview_accelerometer);
+        mainTextViewGPS             = (TextView) findViewById(R.id.main_textview_gps);
         mainButton.setOnClickListener(this);
-        this.imageView = (ImageView)this.findViewById(R.id.imageViewPhotoTaken);
+        this.imageView              = (ImageView)this.findViewById(R.id.imageViewPhotoTaken);
 
-        mSensorManager =  (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mSensorManager              =  (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor                     = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        serviceGPS                  = new ServiceGPSTracker(this);
+
     }
 
     @Override
@@ -137,8 +141,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Bitmap scaled = Bitmap.createScaledBitmap(myBitmap, 512, nh, true);
         imageView.setImageBitmap(scaled);
 
-
-
+        if (serviceGPS.canGetLocation()){
+            mainTextViewGPS.setText("Latitude: " + serviceGPS.getLatitude() + " Longitude: " + serviceGPS.getLongitude());
+        }
         mainTextViewAccelerometer.setText("x = " + x + " y = " + y + " z = " + z);
     }
 
@@ -154,7 +159,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         x = event.values[0];
         y = event.values[1];
         z = event.values[2];
-        System.out.println("x = " + x + " y = " + y + " z = " + z);
     }
 
     @Override
