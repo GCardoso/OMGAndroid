@@ -27,7 +27,8 @@ import java.util.Date;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
-    TextView mainTextView;
+    TextView mainTextViewAccelerometer;
+    TextView mainTextViewGPS;
     Button mainButton;
     public static ImageView imageView;
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
@@ -41,7 +42,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         mainButton = (Button) findViewById(R.id.main_button);
-        mainTextView = (TextView) findViewById(R.id.main_textview);
+        mainTextViewAccelerometer = (TextView) findViewById(R.id.main_textview_accelerometer);
+        mainTextViewGPS = (TextView) findViewById(R.id.main_textview_gps);
         mainButton.setOnClickListener(this);
         this.imageView = (ImageView)this.findViewById(R.id.imageViewPhotoTaken);
 
@@ -137,7 +139,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
 
-        mainTextView.setText("x = " + x + " y = " + y + " z = " + z);
+        mainTextViewAccelerometer.setText("x = " + x + " y = " + y + " z = " + z);
     }
 
     @Override
