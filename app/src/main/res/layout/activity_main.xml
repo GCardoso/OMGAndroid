@@ -5,7 +5,16 @@
     >
 
     <TextView
-        android:id="@+id/main_textview"
+        android:id="@+id/main_textview_accelerometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/textview" />
+
+
+    <TextView
+        android:id="@+id/main_textview_gps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -25,15 +34,18 @@
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:text="@string/button" />
-        <!-- Shows an image from your drawable resources -->
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
-            android:src="@mipmap/ic_launcher" />
+
         <!-- Closing tag for the horizontal nested layout -->
     </LinearLayout>
+    <ImageView
+        android:id="@+id/imageViewPhotoTaken"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="left"
+        android:src="@mipmap/ic_launcher" >
+    </ImageView>
     <!-- Displays keyboard when touched -->
 
 </LinearLayout>
