@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -27,14 +28,15 @@ import java.util.Date;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
-    TextView mainTextViewAccelerometer;
-    TextView mainTextViewGPS;
-    Button mainButton;
+    private TextView mainTextViewAccelerometer;
+    private TextView mainTextViewGPS;
+    private Button mainButton;
+    private Context context;
     public static ImageView imageView;
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
-    SensorManager mSensorManager;
-    ServiceGPSTracker serviceGPS;
-    Sensor mSensor;
+    private SensorManager mSensorManager;
+    private ServiceGPSTracker serviceGPS;
+    private Sensor mSensor;
     private float x,y,z;
 
     @Override
@@ -53,6 +55,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         serviceGPS                  = new ServiceGPSTracker(this);
+        context = getApplicationContext();
 
     }
 
@@ -83,6 +86,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath =  image.getAbsolutePath();
+
+
         return image;
     }
 
@@ -126,8 +131,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
 
-
-        Context context = getApplicationContext();
         CharSequence text = "File was saved in " + mCurrentPhotoPath;
         int duration = Toast.LENGTH_SHORT;
 
@@ -145,6 +148,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             mainTextViewGPS.setText("Latitude: " + serviceGPS.getLatitude() + " Longitude: " + serviceGPS.getLongitude());
         }
         mainTextViewAccelerometer.setText("x = " + x + " y = " + y + " z = " + z);
+
+        context = getApplicationContext();
+        Log.d("TEST Storage", context.getFilesDir().toString());
+
+        System.out.println(context.getFilesDir().toString());
     }
 
     @Override
