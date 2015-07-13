@@ -2,14 +2,22 @@ package com.example.guilhermecardoso.omgandroid;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,20 +27,35 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
-    TextView mainTextView;
-    Button mainButton;
+public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
+    private TextView mainTextViewAccelerometer;
+    private TextView mainTextViewGPS;
+    private Button mainButton;
+    private Context context;
+    public static ImageView imageView;
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
+    private SensorManager mSensorManager;
+    private ServiceGPSTracker serviceGPS;
+    private Sensor mSensor;
+    private float x,y,z;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 2. Access the Button defined in layout XML
-// and listen for it here
-        mainButton = (Button) findViewById(R.id.main_button);
+        mainButton                  = (Button) findViewById(R.id.main_button);
+        mainTextViewAccelerometer   = (TextView) findViewById(R.id.main_textview_accelerometer);
+        mainTextViewGPS             = (TextView) findViewById(R.id.main_textview_gps);
         mainButton.setOnClickListener(this);
+        this.imageView              = (ImageView)this.findViewById(R.id.imageViewPhotoTaken);
+
+        mSensorManager              =  (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor                     = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        serviceGPS                  = new ServiceGPSTracker(this);
+        context = getApplicationContext();
 
     }
 
@@ -62,7 +85,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        mCurrentPhotoPath =  image.getAbsolutePath();
+
+
         return image;
     }
 
@@ -106,13 +131,28 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
 
-
-        Context context = getApplicationContext();
         CharSequence text = "File was saved in " + mCurrentPhotoPath;
         int duration = Toast.LENGTH_SHORT;
 
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+
+        File imgFile = new  File(mCurrentPhotoPath);
+        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+        int nh = (int) ( myBitmap.getHeight() * (512.0 / myBitmap.getWidth()) );
+        Bitmap scaled = Bitmap.createScaledBitmap(myBitmap, 512, nh, true);
+        imageView.setImageBitmap(scaled);
+
+        if (serviceGPS.canGetLocation()){
+            mainTextViewGPS.setText("Latitude: " + serviceGPS.getLatitude() + " Longitude: " + serviceGPS.getLongitude());
+        }
+        mainTextViewAccelerometer.setText("x = " + x + " y = " + y + " z = " + z);
+
+        context = getApplicationContext();
+        Log.d("TEST Storage", context.getFilesDir().toString());
+
+        System.out.println(context.getFilesDir().toString());
     }
 
     @Override
@@ -120,5 +160,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         // Take what was typed into the EditText
         // and use in TextView
         dispatchTakePictureIntent();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        x = event.values[0];
+        y = event.values[1];
+        z = event.values[2];
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+    protected void onPause() {
+        super.onPause();
+    }
+
+    protected void onResume() {
+        super.onResume();
     }
 }
