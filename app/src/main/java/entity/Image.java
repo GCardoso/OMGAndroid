@@ -9,15 +9,20 @@ public class Image {
     private String name;
     private double latitude;
     private double longitude;
-    private float[] accelerometerVal;
+    private float accelerometerX;
+    private float accelerometerY;
+    private float accelerometerZ;
 
-    public Image(long id, String name, double latitude, double longitude, float[] accelerometerVal) {
+    public Image(long id, String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
         this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.accelerometerVal = accelerometerVal;
+        this.accelerometerX = accelerometerX;
+        this.accelerometerY = accelerometerY;
+        this.accelerometerZ = accelerometerZ;
     }
+
 
     public long getId() {
         return id;
@@ -51,12 +56,29 @@ public class Image {
         this.longitude = longitude;
     }
 
-    public float[] getAccelerometerVal() {
-        return accelerometerVal;
+    public float getAccelerometerZ() {
+        return accelerometerZ;
     }
 
-    public void setAccelerometerVal(float[] accelerometerVal) {
-        this.accelerometerVal = accelerometerVal;
+    public void setAccelerometerZ(float accelerometerZ) {
+        this.accelerometerZ = accelerometerZ;
     }
+
+    public float getAccelerometerY() {
+        return accelerometerY;
+    }
+
+    public void setAccelerometerY(float accelerometerY) {
+        this.accelerometerY = accelerometerY;
+    }
+
+    public float getAccelerometerX() {
+        return accelerometerX;
+    }
+
+    public void setAccelerometerX(float accelerometerX) {
+        this.accelerometerX = accelerometerX;
+    }
+}
 }
 
