@@ -59,7 +59,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         serviceGPS                  = new ServiceGPSTracker(this);
         context = getApplicationContext();
-        dbManager = new SQLiteManager();
 
     }
 
