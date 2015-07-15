@@ -7,14 +7,23 @@ public class Image {
 
     private Long id;
     private String name;
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
     private float accelerometerX;
     private float accelerometerY;
     private float accelerometerZ;
 
-    public Image(long id, String name, float latitude, float longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
+    public Image(long id, String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
         this.id = id;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.accelerometerX = accelerometerX;
+        this.accelerometerY = accelerometerY;
+        this.accelerometerZ = accelerometerZ;
+    }
+// construtor sem ID para uso no banco
+    public Image(String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -42,19 +51,19 @@ public class Image {
         this.name = name;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

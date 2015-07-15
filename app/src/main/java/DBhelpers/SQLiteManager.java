@@ -39,8 +39,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
                         TABLE_IMAGES + "(" +
                         _ID + "INTEGER PRIMARY KEY," +
                         _NOME + " TEXT," +
-                        _LATITUDE + " FLOAT," +
-                        _LONGITIDE + " FLOAT," +
+                        _LATITUDE + " DOUBLE," +
+                        _LONGITIDE + " DOUBLE," +
                         _ACCELEROMETERX + " FLOAT," +
                         _ACCELEROMETERY + " FLOAT," +
                         _ACCELEROMETERZ + " FLOAT," + ")";
@@ -86,8 +86,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
             cursor.moveToFirst();
             image.setId(Long.parseLong(cursor.getString(0)));
             image.setName(cursor.getString(1));
-            image.setLatitude(Float.parseFloat(cursor.getString(2)));
-            image.setLongitude(Float.parseFloat(cursor.getString(3)));
+            image.setLatitude(Double.parseDouble(cursor.getString(2)));
+            image.setLongitude(Double.parseDouble(cursor.getString(3)));
             image.setAccelerometerX(Float.parseFloat(cursor.getString(4)));
             image.setAccelerometerY(Float.parseFloat(cursor.getString(5)));
             image.setAccelerometerZ(Float.parseFloat(cursor.getString(6)));

@@ -11,3 +11,8 @@ PhotoGuide.iml
 .idea/gradle.xml
 .idea/gradle.xml
 .idea/vcs.xml
+.idea/gradle.xml
+
+app/src/main/ic_launcher_daniel-web.png
+
+app/app-release.apk
