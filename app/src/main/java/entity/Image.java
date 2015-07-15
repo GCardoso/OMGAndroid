@@ -5,7 +5,7 @@ package entity;
  */
 public class Image {
 
-    private Long id;
+    private Integer id;
     private String name;
     private double latitude;
     private double longitude;
@@ -13,7 +13,7 @@ public class Image {
     private float accelerometerY;
     private float accelerometerZ;
 
-    public Image(long id, String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
+    public Image(Integer id, String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
         this.id = id;
         this.name = name;
         this.latitude = latitude;
@@ -35,11 +35,11 @@ public class Image {
     public Image() {
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
