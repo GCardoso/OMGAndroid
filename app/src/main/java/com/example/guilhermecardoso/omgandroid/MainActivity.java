@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import DBhelpers.SQLiteManager;
+import entity.Image;
+
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
     private TextView mainTextViewAccelerometer;
@@ -86,7 +89,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath =  image.getAbsolutePath();
-
+        newImage();
 
         return image;
     }
@@ -168,6 +171,43 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         y = event.values[1];
         z = event.values[2];
     }
+
+    public void newImage() {
+        SQLiteManager sqLiteManager = new SQLiteManager(this, null, null, 1);
+
+        String nome = mCurrentPhotoPath;
+
+        double lat = serviceGPS.getLatitude();
+        double longt = serviceGPS.getLongitude();
+        float accX = x;
+        float accY = y;
+        float accZ = z;
+
+        Image image =
+                new Image(nome,lat,longt,accX,accY,accY);
+
+        sqLiteManager.addImage(image);
+
+    }
+
+    public void lookupImage (View view) {
+        SQLiteManager sqLiteManager= new SQLiteManager(this, null, null, 1);
+
+        //modificar essa parte com as views que vão fornecer os parametros para busca
+        //Image image =
+        //        sqLiteManager.findImagebyName(productBox.getText().toString());
+        //
+        //if (product != null) {
+        //    idView.setText(String.valueOf(product.getID()));
+
+        //    quantityBox.setText(String.valueOf(product.getQuantity()));
+        //} else {
+        //    idView.setText("No Match Found");
+        //}
+    }
+
+
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
