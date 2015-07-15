@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import DBhelpers.SQLiteManager;
+
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
     private TextView mainTextViewAccelerometer;
@@ -37,6 +39,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private SensorManager mSensorManager;
     private ServiceGPSTracker serviceGPS;
     private Sensor mSensor;
+    private SQLiteManager dbManager;
     private float x,y,z;
 
     @Override
@@ -56,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         serviceGPS                  = new ServiceGPSTracker(this);
         context = getApplicationContext();
+        dbManager = new SQLiteManager();
 
     }
 

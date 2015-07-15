@@ -6,10 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.sql.SQLException;
-
-import javax.crypto.spec.DHGenParameterSpec;
-
 import entity.Image;
 
 /**
@@ -28,7 +24,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     //DB
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "photGuideoDB.db";
+    private static final String DATABASE_NAME = "photoGuideDB.db";
     private static final String TABLE_IMAGES = "images";
 
 
