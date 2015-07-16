@@ -13,6 +13,10 @@ public class Image {
     private float accelerometerY;
     private float accelerometerZ;
 
+    public Image(String name){
+        this.name = name;
+    }
+
     public Image(long id, String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
         this.id = id;
         this.name = name;

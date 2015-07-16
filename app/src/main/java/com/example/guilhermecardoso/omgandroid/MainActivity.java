@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,24 +15,24 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import DBhelpers.SQLiteManager;
-<<<<<<< HEAD
-=======
 import entity.Image;
->>>>>>> master
-
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
     private TextView mainTextViewAccelerometer;
@@ -45,7 +46,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Sensor mSensor;
     private SQLiteManager dbManager;
     private float x,y,z;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    String mCurrentPhotoPath;
 
+    TableLayout mainTable;
+    ArrayList<Image> imagens;
+    static int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +69,87 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         serviceGPS                  = new ServiceGPSTracker(this);
         context = getApplicationContext();
+        mainTable = (TableLayout) findViewById(R.id.main_table);
 
+        imagens = new ArrayList<Image>();
+        createTable();
+    }
+
+    private void createTable(){
+        TableRow tableRowHeader = new TableRow(this);
+        tableRowHeader.setId(10);
+        tableRowHeader.setBackgroundColor(Color.GRAY);
+        tableRowHeader.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.FILL_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT));
+
+        TextView labelInfo = new TextView(this);
+        labelInfo.setId(20);
+        labelInfo.setText("Info Sobre a Imagem");
+        labelInfo.setTextColor(Color.WHITE);
+        labelInfo.setPadding(5, 5, 5, 5);
+        tableRowHeader.addView(labelInfo);// add the column to the table row here
+
+        mainTable.addView(tableRowHeader, new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.FILL_PARENT,
+                TableLayout.LayoutParams.WRAP_CONTENT));
+
+    }
+
+    private void addRow(Image img){
+        TableRow newRow = new TableRow(this);
+        if(count % 2 !=0){
+            newRow.setBackgroundColor(Color.GRAY);
+        }else{
+            newRow.setBackgroundColor(Color.DKGRAY);
+        }
+
+        newRow.setId(100 + count);
+        newRow.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT));
+        newRow.setGravity(Gravity.TOP);
+
+        TextView labelNome = new TextView(this);
+        labelNome.setId(200 + count);
+        labelNome.setText(img.getName() + " ");
+        labelNome.setPadding(2, 0, 5, 0);
+        labelNome.setTextColor(Color.WHITE);
+        newRow.addView(labelNome);
+
+        View v = new View(this);
+        v.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
+        v.setBackgroundColor(Color.rgb(150, 50, 150));
+        newRow.addView(v);
+
+
+        TextView labelXYZ = new TextView(this);
+        labelXYZ.setId(200 + count);
+        labelXYZ.setText(img.getAccelerometerX() + " " + img.getAccelerometerY() + " " + img.getAccelerometerZ() + " ");
+        labelXYZ.setTextColor(Color.WHITE);
+        newRow.addView(labelXYZ);
+
+
+        View v2 = new View(this);
+        v2.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
+        v2.setBackgroundColor(Color.rgb(150, 50, 150));
+        newRow.addView(v2);
+
+        TextView labelGPS = new TextView(this);
+        labelGPS.setId(300 + count);
+        labelGPS.setText(img.getLatitude() + " " + img.getLongitude());
+        labelGPS.setTextColor(Color.WHITE);
+
+
+        newRow.setGravity(Gravity.LEFT);
+        newRow.addView(labelGPS);
+
+// finally add this to the table row
+        mainTable.addView(newRow, new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.FILL_PARENT,
+                TableLayout.LayoutParams.WRAP_CONTENT));
+
+        count++;
     }
 
     @Override
@@ -72,12 +158,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
-    static final int REQUEST_TAKE_PHOTO = 1;
-
-    // Save a file: path for use with ACTION_VIEW intents
-
-        String mCurrentPhotoPath;
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -91,9 +171,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 storageDir      /* directory */
         );
 
+        imagens.add(0,new Image(imageFileName));
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath =  image.getAbsolutePath();
-        newImage();
+        //newImage();
 
         return image;
     }
@@ -156,16 +237,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
         mainTextViewAccelerometer.setText("x = " + x + " y = " + y + " z = " + z);
 
-        context = getApplicationContext();
-        Log.d("TEST Storage", context.getFilesDir().toString());
+        Image imagem = imagens.get(0);
+        imagem.setAccelerometerX(x);
+        imagem.setAccelerometerY(y);
+        imagem.setAccelerometerZ(z);
+        imagem.setLatitude(serviceGPS.getLatitude());
+        imagem.setLongitude(serviceGPS.getLongitude());
+        imagens.set(0, imagem);
 
-        System.out.println(context.getFilesDir().toString());
+        addRow(imagem);
+
+        context = getApplicationContext();
+        //newImage();
+        Log.i("TEST Storage", context.getFilesDir().toString());
     }
 
     @Override
     public void onClick(View v) {
-        // Take what was typed into the EditText
-        // and use in TextView
         dispatchTakePictureIntent();
     }
 
@@ -197,7 +285,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public void lookupImage (View view) {
         SQLiteManager sqLiteManager= new SQLiteManager(this, null, null, 1);
 
-        //modificar essa parte com as views que vão fornecer os parametros para busca
+        //modificar essa parte com as views que vï¿½o fornecer os parametros para busca
         //Image image =
         //        sqLiteManager.findImagebyName(productBox.getText().toString());
         //

@@ -1,6 +1,18 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:scrollbars="vertical"
+    android:scrollbarAlwaysDrawHorizontalTrack="true"
+    android:fillViewport="false">
+
+    <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:scrollbarAlwaysDrawHorizontalTrack="true">
+
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     >
 
@@ -46,6 +58,18 @@
         android:layout_gravity="left"
         android:src="@mipmap/ic_launcher" >
     </ImageView>
-    <!-- Displays keyboard when touched -->
+    <TableLayout
+        android:stretchColumns="0,1"
+        android:id="@+id/main_table"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:scrollbarAlwaysDrawHorizontalTrack="true"
+        android:orientation="vertical"
+        android:layout_column="0">
+    </TableLayout>
 
-</LinearLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</ScrollView>
