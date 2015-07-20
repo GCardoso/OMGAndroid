@@ -1,10 +1,12 @@
 package com.example.guilhermecardoso.omgandroid;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,10 +15,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -34,7 +37,7 @@ import java.util.Date;
 import DBhelpers.SQLiteManager;
 import entity.Image;
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener, SensorEventListener {
+public class MainActivity extends Activity implements View.OnClickListener, SensorEventListener,SurfaceHolder.Callback {
     private TextView mainTextViewAccelerometer;
     private TextView mainTextViewGPS;
     private Button mainButton;
@@ -52,6 +55,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     TableLayout mainTable;
     ArrayList<Image> imagens;
     static int count = 0;
+
+    private SurfaceView preview=null;
+    private SurfaceHolder previewHolder=null;
+    private Camera camera=null;
+    private boolean inPreview=false;
+    private boolean cameraConfigured=false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +84,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         imagens = new ArrayList<Image>();
         createTable();
+
+
+        preview=(SurfaceView)findViewById(R.id.preview);
+        previewHolder = preview.getHolder();
+        previewHolder.addCallback(surfaceCallback);
+        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
+
 
     private void createTable(){
         TableRow tableRowHeader = new TableRow(this);
@@ -252,6 +270,85 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Log.i("TEST Storage", context.getFilesDir().toString());
     }
 
+    private void startPreview() {
+        if (cameraConfigured && camera!=null) {
+
+            camera.setDisplayOrientation(90);
+            camera.startPreview();
+            inPreview=true;
+        }
+    }
+
+    private Camera.Size getBestPreviewSize(int width, int height,
+                                           Camera.Parameters parameters) {
+        Camera.Size result=null;
+
+        for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
+            if (size.width<=width && size.height<=height) {
+                if (result == null) {
+                    result = size;
+                } else {
+                    int resultArea = result.width * result.height;
+                    int newArea = size.width * size.height;
+
+                    if (newArea > resultArea) {
+                        result = size;
+                    }
+                }
+            }
+        }
+        camera.setDisplayOrientation(90);
+        return(result);
+    }
+
+    private void initPreview(int width, int height) {
+        if (camera!=null && previewHolder.getSurface()!=null) {
+            try {
+                camera.setPreviewDisplay(previewHolder);
+            }
+            catch (Throwable t) {
+                Log.e("Preview-surfaceCallback",
+                        "Exception in setPreviewDisplay()", t);
+                Toast
+                        .makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG)
+                        .show();
+            }
+
+            if (!cameraConfigured) {
+                Camera.Parameters parameters=camera.getParameters();
+                Camera.Size size=getBestPreviewSize(width, height,
+                        parameters);
+
+                if (size!=null) {
+                    parameters.setPreviewSize(size.width, size.height);
+                    camera.setParameters(parameters);
+                    cameraConfigured=true;
+                }
+            }
+        }
+    }
+
+    SurfaceHolder.Callback surfaceCallback=new SurfaceHolder.Callback() {
+        public void surfaceCreated(SurfaceHolder holder) {
+            // no-op -- wait until surfaceChanged()
+            
+        }
+
+        public void surfaceChanged(SurfaceHolder holder,
+                                   int format, int width,
+                                   int height) {
+            initPreview(width, height);
+            startPreview();
+
+        }
+
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            // no-op
+        }
+    };
+
+
+
     @Override
     public void onClick(View v) {
         dispatchTakePictureIntent();
@@ -306,10 +403,33 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     }
     protected void onPause() {
+        if (inPreview) {
+            camera.stopPreview();
+        }
+
+        camera.release();
+        camera=null;
+        inPreview=false;
         super.onPause();
     }
 
     protected void onResume() {
         super.onResume();
+        camera = Camera.open();
+        startPreview();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
     }
 }

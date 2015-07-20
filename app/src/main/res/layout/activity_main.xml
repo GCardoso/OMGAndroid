@@ -48,11 +48,19 @@
             android:text="@string/button" />
 
         <!-- Closing tag for the horizontal nested layout -->
+
     </LinearLayout>
+        <!--Largura e altura para ficar 16:10-->
+        <android.view.SurfaceView
+            android:id="@+id/preview"
+            android:layout_width="156.25dp"
+            android:layout_height="250dp"
+            >
+        </android.view.SurfaceView>
     <ImageView
         android:id="@+id/imageViewPhotoTaken"
         android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_height="150dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="40dp"
         android:layout_gravity="left"
