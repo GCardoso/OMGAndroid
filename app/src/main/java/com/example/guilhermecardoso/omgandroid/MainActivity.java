@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ImageFormat;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -33,11 +35,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import DBhelpers.SQLiteManager;
 import entity.Image;
 
-public class MainActivity extends Activity implements View.OnClickListener, SensorEventListener,SurfaceHolder.Callback {
+public class MainActivity extends Activity implements View.OnClickListener, SensorEventListener {
     private TextView mainTextViewAccelerometer;
     private TextView mainTextViewGPS;
     private Button mainButton;
@@ -48,7 +51,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     private ServiceGPSTracker serviceGPS;
     private Sensor mSensor;
     private SQLiteManager dbManager;
-    private float x,y,z;
+    private float x, y, z;
     static final int REQUEST_TAKE_PHOTO = 1;
     String mCurrentPhotoPath;
 
@@ -56,11 +59,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     ArrayList<Image> imagens;
     static int count = 0;
 
-    private SurfaceView preview=null;
-    private SurfaceHolder previewHolder=null;
-    private Camera camera=null;
-    private boolean inPreview=false;
-    private boolean cameraConfigured=false;
+    private SurfaceView preview = null;
+    private SurfaceHolder previewHolder = null;
+    private Camera mCamera = null;
+    private boolean inPreview = false;
+    private boolean cameraConfigured = false;
 
 
     @Override
@@ -68,17 +71,17 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainButton                  = (Button) findViewById(R.id.main_button);
-        mainTextViewAccelerometer   = (TextView) findViewById(R.id.main_textview_accelerometer);
-        mainTextViewGPS             = (TextView) findViewById(R.id.main_textview_gps);
+        mainButton = (Button) findViewById(R.id.main_button);
+        mainTextViewAccelerometer = (TextView) findViewById(R.id.main_textview_accelerometer);
+        mainTextViewGPS = (TextView) findViewById(R.id.main_textview_gps);
         mainButton.setOnClickListener(this);
-        this.imageView              = (ImageView)this.findViewById(R.id.imageViewPhotoTaken);
+        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
 
-        mSensorManager              =  (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor                     = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-        serviceGPS                  = new ServiceGPSTracker(this);
+        serviceGPS = new ServiceGPSTracker(this);
         context = getApplicationContext();
         mainTable = (TableLayout) findViewById(R.id.main_table);
 
@@ -93,7 +96,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     }
 
 
-    private void createTable(){
+    private void createTable() {
         TableRow tableRowHeader = new TableRow(this);
         tableRowHeader.setId(10);
         tableRowHeader.setBackgroundColor(Color.GRAY);
@@ -114,11 +117,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
     }
 
-    private void addRow(Image img){
+    private void addRow(Image img) {
         TableRow newRow = new TableRow(this);
-        if(count % 2 !=0){
+        if (count % 2 != 0) {
             newRow.setBackgroundColor(Color.GRAY);
-        }else{
+        } else {
             newRow.setBackgroundColor(Color.DKGRAY);
         }
 
@@ -189,9 +192,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                 storageDir      /* directory */
         );
 
-        imagens.add(0,new Image(imageFileName));
+        imagens.add(0, new Image(imageFileName));
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath =  image.getAbsolutePath();
+        mCurrentPhotoPath = image.getAbsolutePath();
         //newImage();
 
         return image;
@@ -199,7 +202,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
+        // Ensure that there's a mCamera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
@@ -223,8 +226,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         if (resultCode == RESULT_OK) {
             if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
                 galleryAddPic();
-            }
-            else if (resultCode == RESULT_CANCELED) {
+            } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Picture was not taken", Toast.LENGTH_SHORT);
             }
         }
@@ -243,14 +245,14 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
 
-        File imgFile = new  File(mCurrentPhotoPath);
+        File imgFile = new File(mCurrentPhotoPath);
         Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
-        int nh = (int) ( myBitmap.getHeight() * (512.0 / myBitmap.getWidth()) );
+        int nh = (int) (myBitmap.getHeight() * (512.0 / myBitmap.getWidth()));
         Bitmap scaled = Bitmap.createScaledBitmap(myBitmap, 512, nh, true);
         imageView.setImageBitmap(scaled);
 
-        if (serviceGPS.canGetLocation()){
+        if (serviceGPS.canGetLocation()) {
             mainTextViewGPS.setText("Latitude: " + serviceGPS.getLatitude() + " Longitude: " + serviceGPS.getLongitude());
         }
         mainTextViewAccelerometer.setText("x = " + x + " y = " + y + " z = " + z);
@@ -266,15 +268,17 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         addRow(imagem);
 
         context = getApplicationContext();
-        //newImage();
-        Log.i("TEST Storage", context.getFilesDir().toString());
+        //newImage(
+        // );
+
     }
 
-    private void startPreview() {
-        if (cameraConfigured && camera!=null) {
 
-            camera.setDisplayOrientation(90);
-            camera.startPreview();
+    private void startPreview() {
+        if (cameraConfigured && mCamera !=null) {
+
+            mCamera.setDisplayOrientation(90);
+            mCamera.startPreview();
             inPreview=true;
         }
     }
@@ -297,14 +301,14 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                 }
             }
         }
-        camera.setDisplayOrientation(90);
+        mCamera.setDisplayOrientation(90);
         return(result);
     }
 
     private void initPreview(int width, int height) {
-        if (camera!=null && previewHolder.getSurface()!=null) {
+        if (mCamera !=null && previewHolder.getSurface()!=null) {
             try {
-                camera.setPreviewDisplay(previewHolder);
+                mCamera.setPreviewDisplay(previewHolder);
             }
             catch (Throwable t) {
                 Log.e("Preview-surfaceCallback",
@@ -315,13 +319,45 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             }
 
             if (!cameraConfigured) {
-                Camera.Parameters parameters=camera.getParameters();
-                Camera.Size size=getBestPreviewSize(width, height,
-                        parameters);
+                Camera.Parameters parameters= mCamera.getParameters();
+                //Camera.Size size=getBestPreviewSize(width, height,
+                  //      parameters);
+/////////////////////
+                Camera.Parameters params = mCamera.getParameters();
 
+                // Supported picture formats (all devices should support JPEG).
+                List<Integer> formats = params.getSupportedPictureFormats();
+
+                if (formats.contains(ImageFormat.JPEG))
+                {
+                    params.setPictureFormat(ImageFormat.JPEG);
+                    params.setJpegQuality(100);
+                }
+                else
+                    params.setPictureFormat(PixelFormat.RGB_565);
+
+                // Now the supported picture sizes.
+                List<Camera.Size> sizes = params.getSupportedPictureSizes();
+                Camera.Size size = sizes.get(sizes.size()-1);
+                params.setPictureSize(size.width, size.height);
+
+                // Set the brightness to auto.
+                params.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+
+                // Set the flash mode to auto.
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+
+                // Set the scene mode to auto.
+                params.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+
+                // Lastly set the focus to auto.
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+
+                mCamera.setParameters(params);
+//////////////////
                 if (size!=null) {
                     parameters.setPreviewSize(size.width, size.height);
-                    camera.setParameters(parameters);
+                    mCamera.setParameters(parameters);
                     cameraConfigured=true;
                 }
             }
@@ -331,7 +367,17 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     SurfaceHolder.Callback surfaceCallback=new SurfaceHolder.Callback() {
         public void surfaceCreated(SurfaceHolder holder) {
             // no-op -- wait until surfaceChanged()
-            
+            try {
+                //mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+                mCamera = Camera.open();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+            }
+            try {
+                mCamera.setPreviewDisplay(holder);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         public void surfaceChanged(SurfaceHolder holder,
@@ -339,11 +385,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                                    int height) {
             initPreview(width, height);
             startPreview();
-
         }
 
         public void surfaceDestroyed(SurfaceHolder holder) {
-            // no-op
+            // Surface will be destroyed when we return, so stop the preview.
+            // Because the CameraDevice object is not a shared resource, it's very
+            // important to release it when the activity is paused.
+
         }
     };
 
@@ -373,14 +421,14 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         float accZ = z;
 
         Image image =
-                new Image(nome,lat,longt,accX,accY,accY);
+                new Image(nome, lat, longt, accX, accY, accY);
 
         sqLiteManager.addImage(image);
 
     }
 
-    public void lookupImage (View view) {
-        SQLiteManager sqLiteManager= new SQLiteManager(this, null, null, 1);
+    public void lookupImage(View view) {
+        SQLiteManager sqLiteManager = new SQLiteManager(this, null, null, 1);
 
         //modificar essa parte com as views que v�o fornecer os parametros para busca
         //Image image =
@@ -396,40 +444,40 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     }
 
 
-
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
     protected void onPause() {
         if (inPreview) {
-            camera.stopPreview();
+            mCamera.stopPreview();
         }
 
-        camera.release();
-        camera=null;
+        mCamera.release();
+        mCamera =null;
         inPreview=false;
         super.onPause();
     }
 
     protected void onResume() {
         super.onResume();
-        camera = Camera.open();
+        mCamera = Camera.open();
         startPreview();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    protected void onDestroy() {
+        if (inPreview) {
+            mCamera.stopPreview();
+            inPreview=false;
+        }
+        if (mCamera != null){
+            mCamera.release();
+            mCamera =null;
+        }
+        super.onDestroy();
 
-    }
 
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
     }
 }
