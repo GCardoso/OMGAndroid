@@ -13,10 +13,6 @@ public class Image {
     private float accelerometerY;
     private float accelerometerZ;
 
-    public Image(String name){
-        this.name = name;
-    }
-
     public Image(Integer id, String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
 
         this.id = id;
@@ -36,7 +32,7 @@ public class Image {
         this.accelerometerY = accelerometerY;
         this.accelerometerZ = accelerometerZ;
     }
-
+// construtor vazio
     public Image() {
     }
 
