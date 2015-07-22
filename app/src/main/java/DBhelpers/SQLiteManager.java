@@ -29,7 +29,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
 
     public SQLiteManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+        super(context, DATABASE_NAME, factory,DATABASE_VERSION);
     }
 
     @Override

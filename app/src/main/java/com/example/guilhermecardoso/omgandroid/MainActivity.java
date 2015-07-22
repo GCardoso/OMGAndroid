@@ -46,9 +46,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     private Button mainButton;
     private Context context;
     public static ImageView imageView;
-    protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
     private SensorManager mSensorManager;
     private ServiceGPSTracker serviceGPS;
+    private TableHelper tableHelper;
     private Sensor mSensor;
     private SQLiteManager dbManager;
     private float x, y, z;
@@ -57,7 +57,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
     TableLayout mainTable;
     ArrayList<Image> imagens;
-    static int count = 0;
+
 
     private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
@@ -82,11 +82,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         serviceGPS = new ServiceGPSTracker(this);
-        context = getApplicationContext();
+        tableHelper = new TableHelper(this);
         mainTable = (TableLayout) findViewById(R.id.main_table);
 
         imagens = new ArrayList<Image>();
-        createTable();
+        tableHelper.createTable(mainTable);
 
 
         preview=(SurfaceView)findViewById(R.id.preview);
@@ -96,82 +96,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     }
 
 
-    private void createTable() {
-        TableRow tableRowHeader = new TableRow(this);
-        tableRowHeader.setId(10);
-        tableRowHeader.setBackgroundColor(Color.GRAY);
-        tableRowHeader.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.FILL_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-
-        TextView labelInfo = new TextView(this);
-        labelInfo.setId(20);
-        labelInfo.setText("Info Sobre a Imagem");
-        labelInfo.setTextColor(Color.WHITE);
-        labelInfo.setPadding(5, 5, 5, 5);
-        tableRowHeader.addView(labelInfo);// add the column to the table row here
-
-        mainTable.addView(tableRowHeader, new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.FILL_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
-
-    }
-
-    private void addRow(Image img) {
-        TableRow newRow = new TableRow(this);
-        if (count % 2 != 0) {
-            newRow.setBackgroundColor(Color.GRAY);
-        } else {
-            newRow.setBackgroundColor(Color.DKGRAY);
-        }
-
-        newRow.setId(100 + count);
-        newRow.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-        newRow.setGravity(Gravity.TOP);
-
-        TextView labelNome = new TextView(this);
-        labelNome.setId(200 + count);
-        labelNome.setText(img.getName() + " ");
-        labelNome.setPadding(2, 0, 5, 0);
-        labelNome.setTextColor(Color.WHITE);
-        newRow.addView(labelNome);
-
-        View v = new View(this);
-        v.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
-        v.setBackgroundColor(Color.rgb(150, 50, 150));
-        newRow.addView(v);
-
-
-        TextView labelXYZ = new TextView(this);
-        labelXYZ.setId(200 + count);
-        labelXYZ.setText(img.getAccelerometerX() + " " + img.getAccelerometerY() + " " + img.getAccelerometerZ() + " ");
-        labelXYZ.setTextColor(Color.WHITE);
-        newRow.addView(labelXYZ);
-
-
-        View v2 = new View(this);
-        v2.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
-        v2.setBackgroundColor(Color.rgb(150, 50, 150));
-        newRow.addView(v2);
-
-        TextView labelGPS = new TextView(this);
-        labelGPS.setId(300 + count);
-        labelGPS.setText(img.getLatitude() + " " + img.getLongitude());
-        labelGPS.setTextColor(Color.WHITE);
-
-
-        newRow.setGravity(Gravity.LEFT);
-        newRow.addView(labelGPS);
-
-// finally add this to the table row
-        mainTable.addView(newRow, new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.FILL_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
-
-        count++;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -192,44 +116,12 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                 storageDir      /* directory */
         );
 
-        imagens.add(0, new Image(null));
+        imagens.add(0, new Image());
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         //newImage();
 
         return image;
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a mCamera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
-                startActivityForResult(takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-            }
-        }
-
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-                galleryAddPic();
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Picture was not taken", Toast.LENGTH_SHORT);
-            }
-        }
     }
 
     private void galleryAddPic() {
@@ -265,7 +157,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         imagem.setLongitude(serviceGPS.getLongitude());
         imagens.set(0, imagem);
 
-        addRow(imagem);
+        tableHelper.addRow(mainTable,imagem);
 
         context = getApplicationContext();
         //newImage(
@@ -395,36 +287,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         }
     };
 
-
-
-    @Override
-    public void onClick(View v) {
-        dispatchTakePictureIntent();
-    }
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         x = event.values[0];
         y = event.values[1];
         z = event.values[2];
-    }
-
-    public void newImage() {
-        SQLiteManager sqLiteManager = new SQLiteManager(this, null, null, 1);
-
-        String nome = mCurrentPhotoPath;
-
-        double lat = serviceGPS.getLatitude();
-        double longt = serviceGPS.getLongitude();
-        float accX = x;
-        float accY = y;
-        float accZ = z;
-
-        Image image =
-                new Image(nome, lat, longt, accX, accY, accY);
-
-        sqLiteManager.addImage(image);
-
     }
 
     public void lookupImage(View view) {
@@ -478,6 +345,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         }
         super.onDestroy();
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
 
     }
 }
