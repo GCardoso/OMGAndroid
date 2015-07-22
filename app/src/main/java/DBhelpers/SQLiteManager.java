@@ -29,7 +29,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
 
     public SQLiteManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+        super(context, DATABASE_NAME, factory,DATABASE_VERSION);
     }
 
     @Override
@@ -77,6 +77,33 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public Image findImagebyName(String imagename) {
 
         String query = "Select * FROM " + TABLE_IMAGES + " WHERE " + NOME+ " =  \"" + imagename + "\"";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        Image image = new Image();
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            image.setId(Integer.parseInt(cursor.getString(0)));
+            image.setName(cursor.getString(1));
+            image.setLatitude(Double.parseDouble(cursor.getString(2)));
+            image.setLongitude(Double.parseDouble(cursor.getString(3)));
+            image.setAccelerometerX(Float.parseFloat(cursor.getString(4)));
+            image.setAccelerometerY(Float.parseFloat(cursor.getString(5)));
+            image.setAccelerometerZ(Float.parseFloat(cursor.getString(6)));
+            cursor.close();
+        } else {
+            image = null;
+        }
+        db.close();
+        return image;
+    }
+
+    public Image findImagebyID(String id) {
+
+        String query = "Select * FROM " + TABLE_IMAGES + " WHERE " + ID + " =  \"" + id + "\"";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
