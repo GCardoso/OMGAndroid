@@ -25,15 +25,16 @@ import entity.Image;
 
 public class MainActivity extends Activity {
     public static ImageView imageView;
+
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
     private ServiceGPSTracker serviceGPS;
     private ServiceGyroscope  serviceXYZ;
-
-    private SQLiteManager dbManager;
-    private float x, y, z;
-    static final int REQUEST_TAKE_PHOTO = 1;
+	private TableHelper tableHelper;
+	private SQLiteManager dbManager;
+	static final int REQUEST_TAKE_PHOTO = 1;
 
     TableLayout mainTable;
+
 
     private static int contadorLinhas = 0;
 
@@ -52,11 +53,11 @@ public class MainActivity extends Activity {
         this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
 
         serviceGPS = new ServiceGPSTracker(this);
-        serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
+		serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
         mainTable = (TableLayout) findViewById(R.id.main_table);
 
         dbManager = new SQLiteManager(this,null,null,1);
-        createTable();
+        tableHelper.createTable(mainTable);
 
         preview=(SurfaceView)findViewById(R.id.preview);
         previewHolder = preview.getHolder();
@@ -65,76 +66,8 @@ public class MainActivity extends Activity {
     }
 
 
-    private void createTable() {
-        TableRow tableRowHeader = new TableRow(this);
-        tableRowHeader.setBackgroundColor(Color.GRAY);
-        tableRowHeader.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.FILL_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-
-        TextView labelInfo = new TextView(this);
-        labelInfo.setText("Info Sobre a Imagem");
-        labelInfo.setTextColor(Color.WHITE);
-        labelInfo.setPadding(5, 5, 5, 5);
-        tableRowHeader.addView(labelInfo);// add the column to the table row here
-
-        mainTable.addView(tableRowHeader, new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.FILL_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
-
-    }
-
-    private void addRow(Image img) {
-        TableRow newRow = new TableRow(this);
-        if (contadorLinhas % 2 != 0) {
-            newRow.setBackgroundColor(Color.GRAY);
-        } else {
-            newRow.setBackgroundColor(Color.DKGRAY);
-        }
-
-        newRow.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-        newRow.setGravity(Gravity.TOP);
-
-        TextView labelNome = new TextView(this);
-        labelNome.setText(img.getName() + " ");
-        labelNome.setPadding(2, 0, 5, 0);
-        labelNome.setTextColor(Color.WHITE);
-        newRow.addView(labelNome);
-
-        View v = new View(this);
-        v.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
-        v.setBackgroundColor(Color.rgb(150, 50, 150));
-        newRow.addView(v);
 
 
-        TextView labelXYZ = new TextView(this);
-        labelXYZ.setText(img.getAccelerometerX() + " " + img.getAccelerometerY() + " " + img.getAccelerometerZ() + " ");
-        labelXYZ.setTextColor(Color.WHITE);
-        newRow.addView(labelXYZ);
-
-
-        View v2 = new View(this);
-        v2.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
-        v2.setBackgroundColor(Color.rgb(150, 50, 150));
-        newRow.addView(v2);
-
-        TextView labelGPS = new TextView(this);
-        labelGPS.setText(img.getLatitude() + " " + img.getLongitude());
-        labelGPS.setTextColor(Color.WHITE);
-
-
-        newRow.setGravity(Gravity.LEFT);
-        newRow.addView(labelGPS);
-
-// finally add this to the table row
-        mainTable.addView(newRow, new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.FILL_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
-
-        contadorLinhas++;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,6 +75,7 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     private void startPreview() {
         if (cameraConfigured && mCamera !=null) {
@@ -277,6 +211,11 @@ public class MainActivity extends Activity {
         }
         super.onDestroy();
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
 
     }
 }
