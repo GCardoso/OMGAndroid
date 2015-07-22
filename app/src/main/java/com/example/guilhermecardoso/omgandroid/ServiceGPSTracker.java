@@ -74,6 +74,7 @@ public class ServiceGPSTracker extends Service implements LocationListener{
                                 LocationManager.NETWORK_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, ServiceGPSTracker.this);
+
                         Log.d("Network", "Network");
                         if (mLocationManager != null) {
                             location = mLocationManager
@@ -193,7 +194,6 @@ public class ServiceGPSTracker extends Service implements LocationListener{
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
             }
-            Log.d("Latitude " + getLatitude() + " Longitude: " + getLongitude(), "Location GPS_PROVIDER");
 
             location = mLocationManager
                     .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -201,7 +201,6 @@ public class ServiceGPSTracker extends Service implements LocationListener{
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
             }
-            Log.d("Latitude " + getLatitude() + " Longitude: " + getLongitude(), "Location NETWORK_PROVIDER");
         }
 
         @Override
