@@ -15,41 +15,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     >
-
-    <TextView
-        android:id="@+id/main_textview_accelerometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/textview" />
-
-
-    <TextView
-        android:id="@+id/main_textview_gps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/textview" />
-
-    <!-- This nested layout contains views of its own -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <!-- Set OnClickListener to trigger results when pressed -->
-        <Button
-            android:id="@+id/main_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
-            android:text="@string/button" />
-
-        <!-- Closing tag for the horizontal nested layout -->
-
-    </LinearLayout>
         <!--Largura e altura para ficar 16:10-->
         <android.view.SurfaceView
             android:id="@+id/preview"
@@ -57,7 +22,8 @@
             android:layout_height="250dp"
             >
         </android.view.SurfaceView>
-    <ImageView
+
+        <ImageView
         android:id="@+id/imageViewPhotoTaken"
         android:layout_width="250dp"
         android:layout_height="150dp"
