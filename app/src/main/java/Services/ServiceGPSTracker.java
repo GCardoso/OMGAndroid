@@ -1,4 +1,4 @@
-package com.example.guilhermecardoso.omgandroid;
+package Services;
 
 import android.app.AlertDialog;
 import android.app.Service;

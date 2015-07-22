@@ -1,13 +1,8 @@
 package com.example.guilhermecardoso.omgandroid;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Camera;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,14 +19,15 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import DBhelpers.SQLiteManager;
+import Services.ServiceGPSTracker;
+import Services.ServiceGyroscope;
 import entity.Image;
 
-public class MainActivity extends Activity implements  SensorEventListener {
+public class MainActivity extends Activity {
     public static ImageView imageView;
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
-    private SensorManager mSensorManager;
     private ServiceGPSTracker serviceGPS;
-    private Sensor mSensor;
+    private ServiceGyroscope  serviceXYZ;
 
     private SQLiteManager dbManager;
     private float x, y, z;
@@ -55,11 +51,8 @@ public class MainActivity extends Activity implements  SensorEventListener {
 
         this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-
         serviceGPS = new ServiceGPSTracker(this);
+        serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
         mainTable = (TableLayout) findViewById(R.id.main_table);
 
         dbManager = new SQLiteManager(this,null,null,1);
@@ -239,13 +232,6 @@ public class MainActivity extends Activity implements  SensorEventListener {
         }
     };
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        x = event.values[0];
-        y = event.values[1];
-        z = event.values[2];
-    }
-
     public void lookupImage(View view) {
         SQLiteManager sqLiteManager = new SQLiteManager(this, null, null, 1);
 
@@ -260,12 +246,6 @@ public class MainActivity extends Activity implements  SensorEventListener {
         //} else {
         //    idView.setText("No Match Found");
         //}
-    }
-
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     protected void onPause() {
