@@ -192,7 +192,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                 storageDir      /* directory */
         );
 
-        imagens.add(0, new Image(imageFileName));
+        imagens.add(0, new Image(null));
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         //newImage();
