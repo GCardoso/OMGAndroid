@@ -1,7 +1,6 @@
 package com.example.guilhermecardoso.omgandroid;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -21,22 +20,12 @@ import android.widget.Toast;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.Scalar;
-import org.opencv.features2d.DescriptorExtractor;
-import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.FeatureDetector;
-import org.opencv.features2d.Features2d;
-import org.opencv.highgui.Highgui;
 
 import java.io.IOException;
 
 import DBhelpers.SQLiteManager;
 import OpenCV.OpenCVcameraView;
+import Services.FeatureDetectorAlgorithms;
 import Services.ServiceGPSTracker;
 import Services.ServiceGyroscope;
 import entity.Image;
@@ -73,15 +62,15 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
     public static ImageView imageView;
-    protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
     private ServiceGPSTracker serviceGPS;
     private ServiceGyroscope serviceXYZ;
     private SQLiteManager dbManager;
-    private TableHelper tableHelper;
+	private TableHelper tableHelper;
     private static String TAG = "Main Activity";
-    TableLayout mainTable;
+	TableLayout mainTable;
     private static boolean pathFlag = true;
     private static String path1,path2;
+
 
     private static int contadorLinhas = 0;
 
@@ -120,6 +109,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"Called onCreate");
@@ -149,6 +139,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
 
+
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
         mOpenCvCameraView.setCvCameraViewListener(this);
@@ -161,48 +152,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     }
 
-    private void processORB() {
-        FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
-        DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);
-        ;
-        DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 
+    private void processORB(){
+        imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB("/sdcard/nonfree/img11.jpg","/sdcard/nonfree/img12.jpg"));
 
-        ///storage/emutaled/0/DCIM/Camera/IMG_20150804_165353.jpg
-        ///sdcard/nonfree/IMG_20150804_165353.jpg
-        //first image
-        Mat img1 = Highgui.imread("/storage/emulated/0/DCIM/img1.jpg");
-        Mat descriptors1 = new Mat();
-        MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
-
-
-        detector.detect(img1, keypoints1);
-        descriptor.compute(img1, keypoints1, descriptors1);
-
-        //second image
-        Mat img2 = Highgui.imread("/storage/emulated/0/DCIM/img2.jpg");
-        Mat descriptors2 = new Mat();
-        MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
-
-        detector.detect(img2, keypoints2);
-        descriptor.compute(img2, keypoints2, descriptors2);
-
-        //matcher should include 2 different image's descriptors
-        MatOfDMatch matches = new MatOfDMatch();
-        matcher.match(descriptors1, descriptors2, matches);
-        //feature and connection colors
-        Scalar RED = new Scalar(255, 0, 0);
-        Scalar GREEN = new Scalar(0, 255, 0);
-        //output image
-        Mat outputImg = new Mat();
-        MatOfByte drawnMatches = new MatOfByte();
-        //this will draw all matches, works fine
-        Features2d.drawMatches(img1, keypoints1, img2, keypoints2, matches,
-                outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
-
-        Bitmap imageMatched = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(), Bitmap.Config.RGB_565);//need to save bitmap
-        Utils.matToBitmap(outputImg, imageMatched);
-        imageView.setImageBitmap(imageMatched);
     }
 
 /*
