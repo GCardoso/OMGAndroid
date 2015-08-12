@@ -1,52 +1,9 @@
 package com.example.guilhermecardoso.omgandroid;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.hardware.Camera;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View.OnTouchListener;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.OpenCVLoader;
-
-import java.io.IOException;
-
-import DBhelpers.SQLiteManager;
-import OpenCV.OpenCVcameraView;
-import Services.FeatureDetectorAlgorithms;
-import Services.ServiceGPSTracker;
-import Services.ServiceGyroscope;
-import entity.Image;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.ListIterator;
-
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Mat;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +13,27 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TableLayout;
 import android.widget.Toast;
+
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.ListIterator;
+
+import DBhelpers.SQLiteManager;
+import OpenCV.OpenCVcameraView;
+import Services.FeatureDetectorAlgorithms;
+import Services.ServiceGPSTracker;
+import Services.ServiceGyroscope;
 
 
 
@@ -71,9 +48,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private static boolean pathFlag = true;
     private static String path1,path2;
 
-
     private static int contadorLinhas = 0;
-
 
     /*private SurfaceView preview = null;
     private SurfaceHolder previewHolder = null;
@@ -112,17 +87,17 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG,"Called onCreate");
+        Log.i(TAG, "Called onCreate");
 
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
+        setContentView(R.layout.cameraview);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        /*if (!OpenCVLoader.initDebug()) {
+        if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
             Log.i(TAG, "Didn't work");
-        }*/
+        }
 
-        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
         serviceGPS = new ServiceGPSTracker(this);
         serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
         tableHelper = new TableHelper(this);
@@ -134,27 +109,23 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 */
-
-        setContentView(R.layout.cameraview);
+        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
 
         mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
-
-
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-
         mOpenCvCameraView.setCvCameraViewListener(this);
-
         //mOpenCvCameraView.setResolution();
-
-
-
         processORB();
-
     }
 
 
     private void processORB(){
-        imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB("/sdcard/nonfree/img11.jpg","/sdcard/nonfree/img12.jpg"));
+        if (imageView == null){
+            Log.i(TAG,"Holy shit");
+        }else{
+            Log.i(TAG,"nothing to see here");
+        }
+        imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB("/storage/emulated/0/nonfree/img11.jpg","/storage/emulated/0/nonfree/img12.jpg"));
 
     }
 
@@ -342,8 +313,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         /*super.onResume();
         mCamera = Camera.open();
         startPreview();*/
-
-
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mLoaderCallback);
     }

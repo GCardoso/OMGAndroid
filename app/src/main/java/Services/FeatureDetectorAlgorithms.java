@@ -25,13 +25,10 @@ public class FeatureDetectorAlgorithms {
         DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 
 
-        ///storage/emutaled/0/DCIM/Camera/IMG_20150804_165353.jpg
-        ///sdcard/nonfree/IMG_20150804_165353.jpg
         //first image
         Mat img1 = Highgui.imread(firstPath);
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
-
 
         detector.detect(img1, keypoints1);
         descriptor.compute(img1, keypoints1, descriptors1);
