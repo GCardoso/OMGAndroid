@@ -42,7 +42,7 @@ public class ServiceGyroscope extends Service implements SensorEventListener{
         accY = event.values[1];
         accZ = event.values[2];
 
-        Log.i(TAG,accX + " " + accY + " " + accZ);
+        //Log.i(TAG,accX + " " + accY + " " + accZ);
     }
 
     @Override
