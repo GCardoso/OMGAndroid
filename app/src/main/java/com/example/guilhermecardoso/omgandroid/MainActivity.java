@@ -91,6 +91,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private SubMenu mResolutionMenu;
 
     //Tutorial3 OpenCV caller, Switch to Service Caller
+
+     /*if (!OpenCVLoader.initDebug()) {
+            // Handle initialization error
+            Log.i(TAG, "Didn't work");
+        }*/
+
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -117,12 +123,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        /*if (!OpenCVLoader.initDebug()) {
+        if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
             Log.i(TAG, "Didn't work");
-        }*/
+        }
 
-        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
+
         serviceGPS = new ServiceGPSTracker(this);
         serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
         tableHelper = new TableHelper(this);
@@ -136,7 +142,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 */
 
         setContentView(R.layout.cameraview);
-
+        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
         mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
 
 
@@ -148,13 +154,13 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
 
 
-        processORB();
+        //processORB();
 
     }
 
 
     private void processORB(){
-        imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB("/sdcard/nonfree/img11.jpg","/sdcard/nonfree/img12.jpg"));
+        imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB(path1,path2));
 
     }
 
@@ -372,6 +378,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         Log.i(TAG,"onTouch event");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateandTime = sdf.format(new Date());
+
         String fileName =
                 //"/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
                 "/storage/emulated/0/Download/sample_" + contadorLinhas++ + ".jpg";
