@@ -9,18 +9,13 @@
         android:layout_weight="1"
         android:layout_height="fill_parent">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_weight="1"
-            android:layout_height="fill_parent">
-        </LinearLayout>
-
-        <LinearLayout
+        <ImageView
+            android:id="@+id/imageViewPhotoTaken"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
-            />
-
+            android:layout_gravity="fill_vertical"
+            android:src="@mipmap/ic_launcher" >
+        </ImageView>
 
     </LinearLayout>
     <LinearLayout
@@ -38,7 +33,11 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        ></LinearLayout>
+        >
+
+
+
+    </LinearLayout>
 
 
     </LinearLayout>

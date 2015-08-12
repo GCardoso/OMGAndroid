@@ -80,8 +80,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private TableHelper tableHelper;
     private static String TAG = "Main Activity";
     TableLayout mainTable;
-    private boolean pathFlag = true;
-    private String path1,path2;
+    private static boolean pathFlag = true;
+    private static String path1,path2;
 
     private static int contadorLinhas = 0;
 
@@ -132,8 +132,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
             Log.i(TAG, "Didn't work");
         }*/
 
-        //this.imageView = (ImageView) tis.findViewById(R.id.imageViewPhotoTaken);
-        //mOpenCvCameraView = new OpenCVcameraView(this,null);
+        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
         serviceGPS = new ServiceGPSTracker(this);
         serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
         tableHelper = new TableHelper(this);
@@ -155,12 +154,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         //mOpenCvCameraView.setResolution();
+
+
+
+        processORB();
+
     }
-
-
-        //if(path1 != null && path2 !=null)processORB();
-
-
 
     private void processORB() {
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
@@ -172,7 +171,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         ///storage/emutaled/0/DCIM/Camera/IMG_20150804_165353.jpg
         ///sdcard/nonfree/IMG_20150804_165353.jpg
         //first image
-        Mat img1 = Highgui.imread(path1);
+        Mat img1 = Highgui.imread("/storage/emulated/0/DCIM/img1.jpg");
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
 
@@ -181,7 +180,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         descriptor.compute(img1, keypoints1, descriptors1);
 
         //second image
-        Mat img2 = Highgui.imread(path2);
+        Mat img2 = Highgui.imread("/storage/emulated/0/DCIM/img2.jpg");
         Mat descriptors2 = new Mat();
         MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
 
@@ -205,14 +204,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         Utils.matToBitmap(outputImg, imageMatched);
         imageView.setImageBitmap(imageMatched);
     }
-
-
-  /*  @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }*/
 
 /*
 
@@ -429,10 +420,15 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateandTime = sdf.format(new Date());
         String fileName =
-                "/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
-        mOpenCvCameraView.takePicture(fileName);
+                //"/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
+                "/storage/emulated/0/Download/sample_" + contadorLinhas++ + ".jpg";
+
+                mOpenCvCameraView.takePicture(fileName);
+
         if (pathFlag) path1 = fileName; else path2 = fileName;
+        pathFlag = !pathFlag;
         Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
+        //if(path1 != null && path2 !=null)processORB();
         return false;
     }
 
