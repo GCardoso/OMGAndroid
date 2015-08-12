@@ -66,6 +66,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private SubMenu mResolutionMenu;
 
     //Tutorial3 OpenCV caller, Switch to Service Caller
+
+     /*if (!OpenCVLoader.initDebug()) {
+            // Handle initialization error
+            Log.i(TAG, "Didn't work");
+        }*/
+
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -109,23 +115,28 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 */
-        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
 
-        mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
+        setContentView(R.layout.cameraview);
+        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
+		mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         //mOpenCvCameraView.setResolution();
+
         processORB();
+
     }
 
 
     private void processORB(){
+
         if (imageView == null){
             Log.i(TAG,"Holy shit");
         }else{
             Log.i(TAG,"nothing to see here");
         }
-        imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB("/storage/emulated/0/nonfree/img11.jpg","/storage/emulated/0/nonfree/img12.jpg"));
+	imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB(path1,path2));
+
 
     }
 
@@ -341,6 +352,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         Log.i(TAG,"onTouch event");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateandTime = sdf.format(new Date());
+
         String fileName =
                 //"/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
                 "/storage/emulated/0/Download/sample_" + contadorLinhas++ + ".jpg";
@@ -350,8 +362,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         if (pathFlag) path1 = fileName; else path2 = fileName;
         pathFlag = !pathFlag;
         Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
-        //if(path1 != null && path2 !=null)processORB();
-        return false;
+        if(path1 != null && path2 !=null)processORB();
+		return false;
     }
 
     public void onCameraViewStarted(int width, int height) {
