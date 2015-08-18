@@ -97,7 +97,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
-        setContentView(R.layout.cameraview);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
@@ -112,8 +112,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         //tableHelper.createTable(mainTable);
         /*preview = (SurfaceView) findViewById(R.id.preview);
         previewHolder = preview.getHolder();
-        previewHolder.addCallback(surfaceCallback);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 */
 
         setContentView(R.layout.cameraview);
@@ -123,7 +121,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mOpenCvCameraView.setCvCameraViewListener(this);
         //mOpenCvCameraView.setResolution();
 
-        processORB();
+
 
     }
 
@@ -350,19 +348,20 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         Log.i(TAG,"onTouch event");
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateandTime = sdf.format(new Date());
 
         String fileName =
-                //"/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
-                "/storage/emulated/0/Download/sample_" + contadorLinhas++ + ".jpg";
+                "/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
+
 
                 mOpenCvCameraView.takePicture(fileName);
-
+        if(path1 != null && path2 !=null)processORB();
         if (pathFlag) path1 = fileName; else path2 = fileName;
         pathFlag = !pathFlag;
         Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
-        if(path1 != null && path2 !=null)processORB();
+
 		return false;
     }
 
