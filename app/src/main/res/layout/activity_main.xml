@@ -5,34 +5,41 @@
     android:fillViewport="false">
 
     <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
         android:scrollbarAlwaysDrawHorizontalTrack="true">
 
 
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   <!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:orientation="vertical"
     >
-        <!--Largura e altura para ficar 16:10-->
+
+
+        &lt;!&ndash;&lt;!&ndash;Largura e altura para ficar 16:10&ndash;&gt;&ndash;&gt;
+&lt;!&ndash;
+
         <android.view.SurfaceView
             android:id="@+id/preview"
             android:layout_width="156.25dp"
             android:layout_height="250dp"
-            >
+
+
         </android.view.SurfaceView>
+&ndash;&gt;
 
         <ImageView
         android:id="@+id/imageViewPhotoTaken"
-        android:layout_width="250dp"
-        android:layout_height="150dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="40dp"
-        android:layout_gravity="left"
+        android:layout_width="385dp"
+        android:layout_height="340dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_gravity="fill_vertical"
+
         android:src="@mipmap/ic_launcher" >
     </ImageView>
-    <TableLayout
+    &lt;!&ndash;<TableLayout
         android:stretchColumns="0,1"
         android:id="@+id/main_table"
         android:layout_weight="1"
@@ -41,9 +48,21 @@
         android:scrollbarAlwaysDrawHorizontalTrack="true"
         android:orientation="vertical"
         android:layout_column="0">
-    </TableLayout>
+    </TableLayout>&ndash;&gt;
+        </LinearLayout>-->
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <OpenCV.OpenCVcameraView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:id="@+id/openCVCameraView" />
 
         </LinearLayout>
+
     </HorizontalScrollView>
 
 </ScrollView>

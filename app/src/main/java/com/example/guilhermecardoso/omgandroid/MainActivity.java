@@ -1,177 +1,164 @@
 package com.example.guilhermecardoso.omgandroid;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Color;
-import android.hardware.Camera;
+import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
-import android.view.SurfaceHolder;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.SubMenu;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.ListIterator;
 
 import DBhelpers.SQLiteManager;
+import OpenCV.OpenCVcameraView;
 import Services.FeatureDetectorAlgorithms;
 import Services.ServiceGPSTracker;
 import Services.ServiceGyroscope;
-import entity.Image;
 
-public class MainActivity extends Activity {
+
+
+public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
     public static ImageView imageView;
     private ServiceGPSTracker serviceGPS;
-    private ServiceGyroscope  serviceXYZ;
-    private static String TAG = "Main Activity";
+    private ServiceGyroscope serviceXYZ;
     private SQLiteManager dbManager;
-    protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
-    static final int REQUEST_TAKE_PHOTO = 1;
-
-    TableLayout mainTable;
-
-    private SurfaceView preview = null;
-    private SurfaceHolder previewHolder = null;
-    private Camera mCamera = null;
-    private boolean inPreview = false;
-    private boolean cameraConfigured = false;
+	private TableHelper tableHelper;
+    private static String TAG = "Main Activity";
+	TableLayout mainTable;
+    private static boolean pathFlag = true;
+    private static String path1,path2;
 
     private static int contadorLinhas = 0;
 
+    /*private SurfaceView preview = null;
+    private SurfaceHolder previewHolder = null;
+    private Camera mCamera = null;
+    private boolean inPreview = false;
+    private boolean cameraConfigured = false;*/
+
+    //Tutorial3 atributes clean after
+
+    private OpenCVcameraView mOpenCvCameraView;
+    private List<Size> mResolutionList;
+    private MenuItem[] mEffectMenuItems;
+    private SubMenu mColorEffectsMenu;
+    private MenuItem[] mResolutionMenuItems;
+    private SubMenu mResolutionMenu;
+
+    //Tutorial3 OpenCV caller, Switch to Service Caller
+
+     /*if (!OpenCVLoader.initDebug()) {
+            // Handle initialization error
+            Log.i(TAG, "Didn't work");
+        }*/
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i(TAG, "OpenCV loaded successfully");
+                    mOpenCvCameraView.enableView();
+                    mOpenCvCameraView.setOnTouchListener(MainActivity.this);
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        Log.i(TAG, "Called onCreate");
 
+        super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_main);
+        setContentView(R.layout.cameraview);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
-            Log.i(TAG,"Didn't work");
+            Log.i(TAG, "Didn't work");
         }
-
-        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
 
         serviceGPS = new ServiceGPSTracker(this);
         serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
-        mainTable = (TableLayout) findViewById(R.id.main_table);
-
-        dbManager = new SQLiteManager(this,null,null,1);
-        //createTable();
-
-        preview=(SurfaceView)findViewById(R.id.preview);
+        tableHelper = new TableHelper(this);
+        //mainTable = (TableLayout) findViewById(R.id.main_table);
+        dbManager = new SQLiteManager(this, null, null, 1);
+        //tableHelper.createTable(mainTable);
+        /*preview = (SurfaceView) findViewById(R.id.preview);
         previewHolder = preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+*/
+
+        setContentView(R.layout.cameraview);
+        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
+		mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
+        //mOpenCvCameraView.setResolution();
 
         processORB();
-    }
-
-
-
-
-    private void createTable() {
-        TableRow tableRowHeader = new TableRow(this);
-        tableRowHeader.setBackgroundColor(Color.GRAY);
-        tableRowHeader.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.FILL_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-
-        TextView labelInfo = new TextView(this);
-        labelInfo.setText("Info Sobre a Imagem");
-        labelInfo.setTextColor(Color.WHITE);
-        labelInfo.setPadding(5, 5, 5, 5);
-        tableRowHeader.addView(labelInfo);// add the column to the table row here
-
-        mainTable.addView(tableRowHeader, new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.FILL_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
 
     }
+
 
     private void processORB(){
-        imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB("/sdcard/nonfree/img11.jpg","/sdcard/nonfree/img12.jpg"));
-    }
 
-    private void addRow(Image img) {
-        TableRow newRow = new TableRow(this);
-        if (contadorLinhas % 2 != 0) {
-            newRow.setBackgroundColor(Color.GRAY);
-        } else {
-            newRow.setBackgroundColor(Color.DKGRAY);
+        if (imageView == null){
+            Log.i(TAG,"Holy shit");
+        }else{
+            Log.i(TAG,"nothing to see here");
         }
-
-        newRow.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-        newRow.setGravity(Gravity.TOP);
-
-        TextView labelNome = new TextView(this);
-        labelNome.setText(img.getName() + " ");
-        labelNome.setPadding(2, 0, 5, 0);
-        labelNome.setTextColor(Color.WHITE);
-        newRow.addView(labelNome);
-
-        View v = new View(this);
-        v.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
-        v.setBackgroundColor(Color.rgb(150, 50, 150));
-        newRow.addView(v);
+	imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB(path1,path2));
 
 
-        TextView labelXYZ = new TextView(this);
-        labelXYZ.setText(img.getAccelerometerX() + " " + img.getAccelerometerY() + " " + img.getAccelerometerZ() + " ");
-        labelXYZ.setTextColor(Color.WHITE);
-        newRow.addView(labelXYZ);
-
-
-        View v2 = new View(this);
-        v2.setLayoutParams(new TableRow.LayoutParams(5, TableRow.LayoutParams.MATCH_PARENT));
-        v2.setBackgroundColor(Color.rgb(150, 50, 150));
-        newRow.addView(v2);
-
-        TextView labelGPS = new TextView(this);
-        labelGPS.setText(img.getLatitude() + " " + img.getLongitude());
-        labelGPS.setTextColor(Color.WHITE);
-
-
-        newRow.setGravity(Gravity.LEFT);
-        newRow.addView(labelGPS);
-
-// finally add this to the table row
-        mainTable.addView(newRow, new TableLayout.LayoutParams(
-                TableLayout.LayoutParams.FILL_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT));
-
-        contadorLinhas++;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+/*
 
     private void startPreview() {
-        if (cameraConfigured && mCamera !=null) {
+        if (cameraConfigured && mCamera != null) {
 
             mCamera.setDisplayOrientation(90);
             mCamera.startPreview();
-            inPreview=true;
+            inPreview = true;
         }
     }
+*/
 
+/*
     private Camera.Size getBestPreviewSize(int width, int height,
                                            Camera.Parameters parameters) {
-        Camera.Size result=null;
+        Camera.Size result = null;
 
         for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
-            if (size.width<=width && size.height<=height) {
+            if (size.width <= width && size.height <= height) {
                 if (result == null) {
                     result = size;
                 } else {
@@ -185,15 +172,15 @@ public class MainActivity extends Activity {
             }
         }
         mCamera.setDisplayOrientation(90);
-        return(result);
+        return (result);
     }
+*/
 
-    private void initPreview(int width, int height) {
-        if (mCamera !=null && previewHolder.getSurface()!=null) {
+  /*  private void initPreview(int width, int height) {
+        if (mCamera != null && previewHolder.getSurface() != null) {
             try {
                 mCamera.setPreviewDisplay(previewHolder);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 Log.e("Preview-surfaceCallback",
                         "Exception in setPreviewDisplay()", t);
                 Toast
@@ -202,26 +189,26 @@ public class MainActivity extends Activity {
             }
 
             if (!cameraConfigured) {
-                Camera.Parameters parameters= mCamera.getParameters();
-                Camera.Size size=getBestPreviewSize(width, height,
+                Camera.Parameters parameters = mCamera.getParameters();
+                Camera.Size size = getBestPreviewSize(width, height,
                         parameters);
 
-                if (size!=null) {
+                if (size != null) {
                     parameters.setPreviewSize(size.width, size.height);
                     mCamera.setParameters(parameters);
-                    cameraConfigured=true;
+                    cameraConfigured = true;
                 }
             }
         }
-    }
-
-    SurfaceHolder.Callback surfaceCallback=new SurfaceHolder.Callback() {
+    }*/
+/*
+    SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
         public void surfaceCreated(SurfaceHolder holder) {
             // no-op -- wait until surfaceChanged()
             try {
                 //mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
                 mCamera = Camera.open();
-            }catch (RuntimeException e){
+            } catch (RuntimeException e) {
                 e.printStackTrace();
             }
             try {
@@ -231,7 +218,7 @@ public class MainActivity extends Activity {
             }
         }
 
-        public void surfaceChanged(SurfaceHolder holder,
+        /*public void surfaceChanged(SurfaceHolder holder,
                                    int format, int width,
                                    int height) {
             initPreview(width, height);
@@ -245,6 +232,60 @@ public class MainActivity extends Activity {
 
         }
     };
+*/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        List<String> effects = mOpenCvCameraView.getEffectList();
+
+        if (effects == null) {
+            Log.e(TAG, "Color effects are not supported by device!");
+            return true;
+        }
+
+        mColorEffectsMenu = menu.addSubMenu("Color Effect");
+        mEffectMenuItems = new MenuItem[effects.size()];
+
+        int idx = 0;
+        ListIterator<String> effectItr = effects.listIterator();
+        while(effectItr.hasNext()) {
+            String element = effectItr.next();
+            mEffectMenuItems[idx] = mColorEffectsMenu.add(1, idx, Menu.NONE, element);
+            idx++;
+        }
+
+        mResolutionMenu = menu.addSubMenu("Resolution");
+        mResolutionList = mOpenCvCameraView.getResolutionList();
+        mResolutionMenuItems = new MenuItem[mResolutionList.size()];
+
+        ListIterator<Size> resolutionItr = mResolutionList.listIterator();
+        idx = 0;
+        while(resolutionItr.hasNext()) {
+            Size element = resolutionItr.next();
+            mResolutionMenuItems[idx] = mResolutionMenu.add(2, idx, Menu.NONE,
+                    Integer.valueOf(element.width).toString() + "x" + Integer.valueOf(element.height).toString());
+            idx++;
+        }
+
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
+        if (item.getGroupId() == 1) {
+            mOpenCvCameraView.setEffect((String) item.getTitle());
+            Toast.makeText(this, mOpenCvCameraView.getEffect(), Toast.LENGTH_SHORT).show();
+        } else if (item.getGroupId() == 2) {
+            int id = item.getItemId();
+            Size resolution = mResolutionList.get(id);
+            mOpenCvCameraView.setResolution(resolution);
+            resolution = mOpenCvCameraView.getResolution();
+            String caption = Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
+            Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
+        }
+
+        return true;
+    }
 
     public void lookupImage(View view) {
         SQLiteManager sqLiteManager = new SQLiteManager(this, null, null, 1);
@@ -263,34 +304,80 @@ public class MainActivity extends Activity {
     }
 
     protected void onPause() {
-        if (inPreview) {
+ /*       if (inPreview) {
             mCamera.stopPreview();
         }
 
         mCamera.release();
-        mCamera =null;
-        inPreview=false;
+        mCamera = null;
+        inPreview = false;
+        super.onPause();*/
+
         super.onPause();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+
+
     }
 
     protected void onResume() {
-        super.onResume();
+        /*super.onResume();
         mCamera = Camera.open();
-        startPreview();
+        startPreview();*/
+        super.onResume();
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mLoaderCallback);
     }
 
     @Override
     protected void onDestroy() {
-        if (inPreview) {
+/*        if (inPreview) {
             mCamera.stopPreview();
-            inPreview=false;
+            inPreview = false;
         }
-        if (mCamera != null){
+        if (mCamera != null) {
             mCamera.release();
-            mCamera =null;
+            mCamera = null;
         }
-        super.onDestroy();
+        super.onDestroy();*/
 
+        super.onDestroy();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
 
     }
+
+    @SuppressLint("SimpleDateFormat")
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Log.i(TAG,"onTouch event");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateandTime = sdf.format(new Date());
+
+        String fileName =
+                //"/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
+                "/storage/emulated/0/Download/sample_" + contadorLinhas++ + ".jpg";
+
+                mOpenCvCameraView.takePicture(fileName);
+
+        if (pathFlag) path1 = fileName; else path2 = fileName;
+        pathFlag = !pathFlag;
+        Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
+        if(path1 != null && path2 !=null)processORB();
+		return false;
+    }
+
+    public void onCameraViewStarted(int width, int height) {
+    }
+
+    public void onCameraViewStopped() {
+    }
+
+    @Override
+    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+        return inputFrame.rgba();
+    }
+
+
+
+
 }
