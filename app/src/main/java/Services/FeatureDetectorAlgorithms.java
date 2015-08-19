@@ -3,7 +3,6 @@ package Services;
 import android.graphics.Bitmap;
 
 import org.opencv.android.Utils;
-import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
@@ -20,7 +19,6 @@ import org.opencv.features2d.KeyPoint;
 import org.opencv.highgui.Highgui;
 
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -130,8 +128,8 @@ public class FeatureDetectorAlgorithms {
         ArrayList<DMatch> filteredMatches12 = new ArrayList<DMatch>();
 
         //Now need to convert the MatOfKeyPoint
-        //MatOfPoint2f keypointsConverted1 = convertMatOfKeypoint2MatOfPoint2f(keypoints1);
-        //MatOfPoint2f keypointsConverted2 = convertMatOfKeypoint2MatOfPoint2f(keypoints2);
+        MatOfPoint2f keypointsConverted1 = convertMatOfKeypoint2MatOfPoint2f(keypoints1);
+        MatOfPoint2f keypointsConverted2 = convertMatOfKeypoint2MatOfPoint2f(keypoints2);
 
         //Filtering matches
         for (int i = 0; i < matchesConverted12.length; i++){
@@ -176,10 +174,8 @@ public class FeatureDetectorAlgorithms {
         MatOfPoint2f nextPts = getMatOfPoint2fFromDMatchesQuery(matches, keypoints2);
 
         //Calculo da Matriz Fundamental
-        Mat fundamental_matrix = Calib3d.findFundamentalMat(
-                nextPts, prevPts, Calib3d.FM_RANSAC, 3, 0.99);
-
-
+        //Mat fundamental_matrix = Calib3d.findFundamentalMat(
+          //      nextPts, prevPts, Calib3d.FM_RANSAC, 3, 0.99);
 
         //Calib3d.correctMatches(fundamental_matrix,keypoints1,keypoints2,keypoints1,keypoints2);
 
