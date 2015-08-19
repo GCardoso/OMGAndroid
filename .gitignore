@@ -10,3 +10,13 @@ openCVLibrary249/build/generated/source/aidl/debug/org/opencv/engine/OpenCVEngin
 openCVLibrary249/build/generated/source/aidl/debug/org/opencv/engine/OpenCVEngineInterface.java
 
 openCVLibrary249/build/generated/source/aidl/release/org/opencv/engine/OpenCVEngineInterface.java
+
+*.lock
+
+*.bin
+
+*.bin
+
+*.bin
+
+.idea/workspace.xml
