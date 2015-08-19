@@ -357,9 +357,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
 
                 mOpenCvCameraView.takePicture(fileName);
-        if(path1 != null && path2 !=null)processORB();
         if (pathFlag) path1 = fileName; else path2 = fileName;
         pathFlag = !pathFlag;
+        if(path1 != null && path2 !=null)processORB();
         Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
 
 		return false;
