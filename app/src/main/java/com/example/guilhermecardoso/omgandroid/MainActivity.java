@@ -353,10 +353,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         String currentDateandTime = sdf.format(new Date());
 
         String fileName =
-                "/storage/emulated/0/Download/sample_" + currentDateandTime + ".jpg";
+                "/storage/emulated/0/PhotoGuide/sample_" + currentDateandTime + ".jpg";
 
 
-                mOpenCvCameraView.takePicture(fileName);
+        mOpenCvCameraView.takePicture(fileName);
         if(path1 != null && path2 !=null)processORB();
         if (pathFlag) path1 = fileName; else path2 = fileName;
         pathFlag = !pathFlag;
