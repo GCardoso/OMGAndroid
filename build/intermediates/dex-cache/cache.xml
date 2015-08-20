@@ -9,18 +9,11 @@
         <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.0-be19e54786a089977ba535e10c3d18e869fbb95e.jar" />
     </item>
     <item
-        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/jars/classes.jar"
+        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/PhotoGuide/openCVLibrary249/unspecified/jars/classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-9ec5c10fba325c0b1871636e587e13d0e47108af.jar" />
-    </item>
-    <item
-        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/classes.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-23c661be6d7efb94ce47034235d034c958460b58.jar" />
+        sha1="670e036e7c0ac1672c1150936248d57f3dd190e3">
+        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-83895af9e95272844cd61296b3509aaee93dc43b.jar" />
     </item>
     <item
         jar="/Users/guilhermecardoso/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0.jar"
@@ -30,11 +23,18 @@
         <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/support-annotations-22.2.0-29b8a57b4dce013c65b7a9d4ed233456a2ee03f4.jar" />
     </item>
     <item
-        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/PhotoGuide/openCVLibrary249/unspecified/jars/classes.jar"
+        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="1c1d0a884b133fbcb00195454b75d911d3ef705f">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-83895af9e95272844cd61296b3509aaee93dc43b.jar" />
+        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
+        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-23c661be6d7efb94ce47034235d034c958460b58.jar" />
+    </item>
+    <item
+        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
+        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-9ec5c10fba325c0b1871636e587e13d0e47108af.jar" />
     </item>
 
 </items>

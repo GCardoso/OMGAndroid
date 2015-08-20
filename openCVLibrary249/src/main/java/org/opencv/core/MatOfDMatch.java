@@ -1,9 +1,9 @@
 package org.opencv.core;
 
+import org.opencv.features2d.DMatch;
+
 import java.util.Arrays;
 import java.util.List;
-
-import org.opencv.features2d.DMatch;
 
 public class MatOfDMatch extends Mat {
     // 32FC4
@@ -71,7 +71,7 @@ public class MatOfDMatch extends Mat {
         return a;
     }
 
-    public void fromList(List<DMatch> ldm) {
+    public void fromList(java.util.List<DMatch> ldm) {
         DMatch adm[] = ldm.toArray(new DMatch[0]);
         fromArray(adm);
     }
