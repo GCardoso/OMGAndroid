@@ -1,2 +1,8 @@
 .idea/workspace.xml
 .idea/misc.xml
+*.bin
+build/intermediates/dex-cache/cache.xml
+*.bin
+openCVLibrary249/build/generated/source/aidl/release/org/opencv/engine/OpenCVEngineInterface.java
+openCVLibrary249/build/intermediates/incremental/packageResources/release/merger.xml
+.gradle/2.2.1/taskArtifacts/taskArtifacts.bin

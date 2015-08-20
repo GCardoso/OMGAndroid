@@ -23,18 +23,18 @@
         <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.0-4e0273f507b628d439850ee7080266dda03db705.jar" />
     </item>
     <item
-        jar="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\exploded-aar\PhotoGuide\openCVLibrary249\unspecified\jars\classes.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="d999c59cb6c1733306eeb61f6966fa89f9e9798d">
-        <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\classes-4cbd389ed6fe1a8bd4273a4512c34ef4ba6b013d.jar" />
-    </item>
-    <item
         jar="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\classes.jar"
         jumboMode="false"
         revision="22.0.1"
         sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
         <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\classes-64fdf1e33e7e0498be02ebf13dcf2c9eee664eb8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\exploded-aar\PhotoGuide\openCVLibrary249\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d999c59cb6c1733306eeb61f6966fa89f9e9798d">
+        <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\classes-4cbd389ed6fe1a8bd4273a4512c34ef4ba6b013d.jar" />
     </item>
 
 </items>
