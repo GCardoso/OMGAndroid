@@ -20,3 +20,7 @@ openCVLibrary249/build/generated/source/aidl/release/org/opencv/engine/OpenCVEng
 *.bin
 
 .idea/workspace.xml
+
+*.bin
+
+*.lock
