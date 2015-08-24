@@ -42,3 +42,13 @@ openCVLibrary249/build/generated/source/aidl/release/org/opencv/engine/OpenCVEng
 openCVLibrary249/build/intermediates/incremental/packageResources/release/merger.xml
 .gradle/2.2.1/taskArtifacts/taskArtifacts.bin
 
+.idea/gradle.xml
+.idea/workspace.xml
+*.properties
+.idea/workspace.xml
+*.bin
+.idea/libraries/support_v4_22_2_0.xml
+.idea/libraries/appcompat_v7_22_2_0.xml
+.idea/libraries/support_annotations_22_2_0.xml
+openCVLibrary249/build/outputs/aar/openCVLibrary249-release.aar
+*.aar
