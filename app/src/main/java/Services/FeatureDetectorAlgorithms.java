@@ -1,9 +1,11 @@
 package Services;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import org.opencv.android.Utils;
+import org.opencv.calib3d.Calib3d;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
@@ -79,20 +81,20 @@ public class FeatureDetectorAlgorithms {
 
 
         //first image
-        Mat img1 = Highgui.imread(firstPath);
+        Mat img_object = Highgui.imread(firstPath);
         Mat descriptors1 = new Mat();
-        MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+        MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
 
-        detector.detect(img1, keypoints1);
-        descriptor.compute(img1, keypoints1, descriptors1);
+        detector.detect(img_object, keypoints_object);
+        descriptor.compute(img_object, keypoints_object, descriptors1);
 
         //second image
-        Mat img2 = Highgui.imread(secondPath);
+        Mat img_scene = Highgui.imread(secondPath);
         Mat descriptors2 = new Mat();
-        MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
+        MatOfKeyPoint keypoints_scene = new MatOfKeyPoint();
 
-        detector.detect(img2, keypoints2);
-        descriptor.compute(img2, keypoints2, descriptors2);
+        detector.detect(img_scene, keypoints_scene);
+        descriptor.compute(img_scene, keypoints_scene, descriptors2);
 
         //matcher should include 2 different image's descriptors
         MatOfDMatch matches = new MatOfDMatch();
@@ -103,7 +105,7 @@ public class FeatureDetectorAlgorithms {
         double maxDist = 0.0;
         double minDist = 100.0;
 
-        for (int i = 0; i < keypoints1.rows(); i++){
+        for (int i = 0; i < keypoints_object.rows(); i++){
             double dist = matcheslist.get(i).distance;
             if (dist < minDist){
                 minDist = dist;
@@ -114,7 +116,7 @@ public class FeatureDetectorAlgorithms {
             }
         }
 
-        Log.i(TAG, "Max = " + maxDist + " Min = " + minDist);
+        //Log.i(TAG, "Max = " + maxDist + " Min = " + minDist);
 
         LinkedList<DMatch> goodMatches = new LinkedList<DMatch>();
         for (int i = 0; i < descriptors1.rows(); i++){
@@ -122,29 +124,50 @@ public class FeatureDetectorAlgorithms {
                 goodMatches.addLast(matcheslist.get(i));
             }
         }
-        DMatch goodMatchesArray[] = new DMatch[goodMatches.size()];
-
-        for (int i = 0; i < goodMatches.size(); i++){
-            goodMatchesArray[i] = goodMatches.get(i);
-        }
 
         MatOfDMatch gm = new MatOfDMatch();
-        gm.fromArray(goodMatchesArray);
-
+        gm.fromList(goodMatches);
 
         //feature and connection colors
         Scalar RED = new Scalar(255,0,0);
         Scalar GREEN = new Scalar(0,255,0);
 
+        //now find the homography matrix
+        List<KeyPoint> obj_keypont = keypoints_object.toList();
+        List<KeyPoint> scene_keypont = keypoints_scene.toList();
+
+        LinkedList<Point> obj_pointsList = new LinkedList<Point>();
+        LinkedList<Point> scene_pointsList = new LinkedList<Point>();
+
+        for (int i = 0; i < goodMatches.size(); i++){
+            obj_pointsList.addLast(obj_keypont.get(goodMatches.get(i).queryIdx).pt);
+            scene_pointsList.addLast(scene_keypont.get(goodMatches.get(i).trainIdx).pt);
+        }
+
+        MatOfPoint2f obj = new MatOfPoint2f();
+        obj.fromList(obj_pointsList);
+        MatOfPoint2f scene = new MatOfPoint2f();
+        scene.fromList(scene_pointsList);
+        Mat inliners = new Mat();
+        Mat homography = Calib3d.findHomography(obj,scene,Calib3d.RANSAC,1,inliners);
+        Mat obj_corners = new Mat(4,1, CvType.CV_32FC2);
+        Mat scene_corners = new Mat(4,1,CvType.CV_32FC2);
+
+
         //output image
         Mat outputImg = new Mat();
         MatOfByte drawnMatches = new MatOfByte();
 
-        matches = new MatOfDMatch();
+        inliners.get(0,0);
 
         //this will draw all matches, works fine
-        Features2d.drawMatches(img1, keypoints1, img2, keypoints2, gm,
+        Features2d.drawMatches(img_object, keypoints_object, img_scene, keypoints_scene, gm,
                 outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
+
+        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
+        Core.line(img_object, new Point(), new Point(), new Scalar(0,255,0), 4);
+        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
+        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
 
         Bitmap imageMatched = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(), Bitmap.Config.RGB_565);//need to save bitmap
         Utils.matToBitmap(outputImg, imageMatched);
