@@ -1,6 +1,7 @@
 package Services;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.calib3d.Calib3d;
@@ -158,7 +159,7 @@ public class FeatureDetectorAlgorithms {
         Mat outputImg = new Mat();
         MatOfByte drawnMatches = new MatOfByte();
 
-        inliners.get(0,0);
+        Log.i(TAG,inliners.get(0,0).toString());
 
         //this will draw all matches, works fine
         Features2d.drawMatches(img_object, keypoints_object, img_scene, keypoints_scene, gm,
