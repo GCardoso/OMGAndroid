@@ -5,7 +5,6 @@ import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.calib3d.Calib3d;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -155,20 +154,43 @@ public class FeatureDetectorAlgorithms {
         Mat scene_corners = new Mat(4,1,CvType.CV_32FC2);
 
 
-        //output image
+        //Cleaning not good matches
         Mat outputImg = new Mat();
-        MatOfByte drawnMatches = new MatOfByte();
+        List<KeyPoint> listOfGoodKeypointsObj = keypoints_object.toList();
+        List<KeyPoint> listOfGoodKeypointsScene = keypoints_scene.toList();
+        for (int i = 0; i < inliners.rows(); i++){
+            StringBuilder sb = new StringBuilder("");
+            for (int j = 0; j < inliners.cols(); j++){
+                double[] indexes = inliners.get(i,j);
+                for (int k = 0; k < indexes.length; k++){
+                    sb.append(indexes[k] + " ");
+                    if (indexes[k] <= 0){
+                        listOfGoodKeypointsObj.remove(keypoints_object.get(i,j));
+                        listOfGoodKeypointsScene.remove(keypoints_scene.get(i,j));
+                    }
+                }
+                Log.i(TAG,"inliners(" + i + "," + j + ") -> " + sb.toString());
+//                Log.i(TAG,"inliners size = " + inliners.size());
+//                Log.i(TAG,"obj size = " + obj.size());
+//                Log.i(TAG,"scene size = " + scene.size());
+            }
+        }
 
-        Log.i(TAG,inliners.get(0,0).toString());
-
+        //output image
         //this will draw all matches, works fine
-        Features2d.drawMatches(img_object, keypoints_object, img_scene, keypoints_scene, gm,
-                outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
+        //Features2d.drawMatches(img_object, keypoints_object, img_scene, keypoints_scene, gm,
+        //        outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
+        //Features2d.drawMatches(img_object,keypoints_object,img_scene,keypoints_scene,gm,outputImg,GREEN,RED,new MatOfByte(inliners),Features2d.NOT_DRAW_SINGLE_POINTS);
+        MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+        keypoints1.fromList(listOfGoodKeypointsObj);
+        MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
+        keypoints2.fromList(listOfGoodKeypointsScene);
+        Features2d.drawMatches(img_object, keypoints1, img_scene, keypoints2, gm, outputImg, GREEN, RED, new MatOfByte(inliners), Features2d.NOT_DRAW_SINGLE_POINTS);
 
-        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
-        Core.line(img_object, new Point(), new Point(), new Scalar(0,255,0), 4);
-        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
-        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0,255,0), 4);
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
 
         Bitmap imageMatched = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(), Bitmap.Config.RGB_565);//need to save bitmap
         Utils.matToBitmap(outputImg, imageMatched);
