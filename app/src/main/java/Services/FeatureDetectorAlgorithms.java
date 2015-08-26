@@ -159,11 +159,15 @@ public class FeatureDetectorAlgorithms {
         scene.fromList(scene_pointsList);
         Mat inliners = new Mat();
 
-        if (obj.dims() == 0 || scene.dims() == 0) return null;
+        if (obj.dims() == 0 || scene.dims() == 0) {
+            Log.e(TAG,"Keypoints dimentions are 0");
+            return null;
+        }
 
         try {
             Mat homography = Calib3d.findHomography(obj,scene,Calib3d.RANSAC,1,inliners);
         }catch (CvException e){
+                e.printStackTrace();
                 return null;
             }
 

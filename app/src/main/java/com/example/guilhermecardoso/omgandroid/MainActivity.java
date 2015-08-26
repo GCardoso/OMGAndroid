@@ -65,8 +65,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private MenuItem[] mResolutionMenuItems;
     private SubMenu mResolutionMenu;
 
-    public Mat                    mRgba;
-    public Mat                    mRgba2;
+    public Mat                    mGray;
+    public Mat                    mGray2;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -128,7 +128,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     private void processORB(){
 
-             Bitmap img = FeatureDetectorAlgorithms.ORB(mRgba, mRgba2);
+             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
 
 
@@ -255,8 +255,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     public void onCameraViewStarted(int width, int height) {
-        mRgba = new Mat();
-        mRgba2 = new Mat();
+        mGray = new Mat();
+        mGray2 = new Mat();
 
     }
 
@@ -267,19 +267,19 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
 
-        if (mRgba2 == null){
-            mRgba = inputFrame.rgba();
-            mRgba2 = mRgba;
+        if (mGray2 == null){
+            mGray = inputFrame.gray();
+            mGray2 = mGray;
         }
         else {
-            mRgba2 = mRgba;
-            mRgba = inputFrame.rgba();
+            mGray2 = mGray;
+            mGray = inputFrame.gray();
 
-            Mat m1 = mRgba;
-            Mat m2 = mRgba2;
+            Mat m1 = mGray;
+            Mat m2 = mGray2;
 
-            mRgba = m1;
-            mRgba2 = m2;
+            mGray = m1;
+            mGray2 = m2;
             if (contFrames++ == FPS){
                 contFrames = 0;
             runOnUiThread(new Runnable() {
@@ -292,7 +292,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
             });
         }
         }
-        return mRgba;
+        return inputFrame.rgba();
     }
 
 
