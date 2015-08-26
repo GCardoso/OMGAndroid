@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +49,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 	TableLayout mainTable;
     private static boolean pathFlag = true;
     private static String path1,path2;
+    private static File defaultPicturesSaveFolder;
 
     private static int contadorLinhas = 0;
 
@@ -122,6 +125,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         //mOpenCvCameraView.setResolution();
 
 
+        defaultPicturesSaveFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/PhotoGuide");
+        if(!defaultPicturesSaveFolder.exists()) {
+            defaultPicturesSaveFolder.mkdir();
+        }
 
     }
 
@@ -353,7 +360,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         String currentDateandTime = sdf.format(new Date());
 
         String fileName =
-                "/storage/emulated/0/PhotoGuide/sample_" + currentDateandTime + ".jpg";
+
+                defaultPicturesSaveFolder + "/sample_" + currentDateandTime + ".jpg";
 
 
         mOpenCvCameraView.takePicture(fileName);
