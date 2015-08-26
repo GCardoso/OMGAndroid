@@ -83,7 +83,7 @@ public class FeatureDetectorAlgorithms {
 
         //first image
 
-        Mat img1 = //                Highgui.imread(firstPath);
+        Mat img_object = //                Highgui.imread(firstPath);
                 firstPath;
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
@@ -92,7 +92,7 @@ public class FeatureDetectorAlgorithms {
         descriptor.compute(img_object, keypoints_object, descriptors1);
 
         //second image
-        Mat img2 = //Highgui.imread(secondPath);
+        Mat img_scene = //Highgui.imread(secondPath);
                 secondPath;
 
         Mat descriptors2 = new Mat();
@@ -107,7 +107,7 @@ public class FeatureDetectorAlgorithms {
         descriptors1.convertTo(descriptors1, CvType.CV_8U);
         descriptors2.convertTo(descriptors2, CvType.CV_8U);
 
-        Log.i("CAMERAFRAME", "Types: " + img1.type() + " , " + img2.type() + ".");
+        Log.i("CAMERAFRAME", "Types: " + img_object.type() + " , " + img_scene.type() + ".");
         Log.i("CAMERAFRAME", "Types desc after : " + descriptors1.type() + " , " + descriptors2.type() + ".");
         Log.i("CAMERAFRAME", "Rows desc after " + descriptors1.rows() + " m1 rows -> " + descriptors2.rows() + " m2 row");
         Log.i("CAMERAFRAME", "Cols desc after " + descriptors1.cols() + " m1 rows -> " + descriptors2.cols() + " m2 row");
@@ -126,6 +126,8 @@ public class FeatureDetectorAlgorithms {
             }
         }
 
+        if (keypoints_object.empty() || keypoints_scene.empty()) return null;
+
         List<DMatch> matcheslist = matches.toList();
 
         double maxDist = 0.0;
@@ -142,7 +144,7 @@ public class FeatureDetectorAlgorithms {
             }
         }
 
-        //Log.i(TAG, "Max = " + maxDist + " Min = " + minDist);
+        Log.i(TAG, "Max = " + maxDist + " Min = " + minDist);
 
         LinkedList<DMatch> goodMatches = new LinkedList<DMatch>();
         for (int i = 0; i < descriptors1.rows(); i++){
@@ -175,7 +177,11 @@ public class FeatureDetectorAlgorithms {
         MatOfPoint2f scene = new MatOfPoint2f();
         scene.fromList(scene_pointsList);
         Mat inliners = new Mat();
-        Mat homography = Calib3d.findHomography(obj,scene,Calib3d.RANSAC,1,inliners);
+
+
+
+
+
         Mat obj_corners = new Mat(4,1, CvType.CV_32FC2);
         Mat scene_corners = new Mat(4,1,CvType.CV_32FC2);
 
@@ -211,6 +217,7 @@ public class FeatureDetectorAlgorithms {
         keypoints1.fromList(listOfGoodKeypointsObj);
         MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
         keypoints2.fromList(listOfGoodKeypointsScene);
+        if (inliners.dims() < 2) return null;
         Features2d.drawMatches(img_object, keypoints1, img_scene, keypoints2, gm, outputImg, GREEN, RED, new MatOfByte(inliners), Features2d.NOT_DRAW_SINGLE_POINTS);
 
 //        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
