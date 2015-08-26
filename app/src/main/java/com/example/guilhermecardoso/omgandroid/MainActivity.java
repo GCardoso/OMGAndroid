@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private static String path1,path2;
     private static File defaultPicturesSaveFolder;
     private static int contFrames = 0;
-    private static final int FPS = 24;
+    private static final int FPS = 1;
     private static int contadorLinhas = 0;
 
     //Tutorial3 atributes clean after
@@ -129,7 +129,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private void processORB(){
 
              Bitmap img = FeatureDetectorAlgorithms.ORB(mRgba, mRgba2);
-        if (img==null) { Log.i(TAG,"erro errado");} else imageView.setImageBitmap(img);
+        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
 
 
     }
@@ -277,9 +277,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
             Mat m1 = mRgba;
             Mat m2 = mRgba2;
-
-            //m1.convertTo(m1, CvType.CV_32FC2);
-            //m2.convertTo(m2, CvType.CV_32FC2);
 
             mRgba = m1;
             mRgba2 = m2;

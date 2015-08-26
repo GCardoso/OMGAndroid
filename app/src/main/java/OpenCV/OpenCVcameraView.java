@@ -57,10 +57,7 @@ public class OpenCVcameraView extends JavaCameraView implements PictureCallback 
 
     public void takePicture(final String fileName) {
         Log.i(TAG, "Taking picture");
-        File file = new File(fileName);
-        if (!file.exists()){
-            file.mkdirs();
-        }
+
         this.mPictureFileName = fileName;
         // Postview and jpeg are sent in the same buffers if the queue is not empty when performing a capture.
         // Clear up buffers to avoid mCamera.takePicture to be stuck because of a memory issue
