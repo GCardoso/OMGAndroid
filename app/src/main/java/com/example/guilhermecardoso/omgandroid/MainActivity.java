@@ -2,6 +2,7 @@ package com.example.guilhermecardoso.omgandroid;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,6 +24,7 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 import java.io.File;
@@ -50,14 +52,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private static boolean pathFlag = true;
     private static String path1,path2;
     private static File defaultPicturesSaveFolder;
-
     private static int contadorLinhas = 0;
-
-    /*private SurfaceView preview = null;
-    private SurfaceHolder previewHolder = null;
-    private Camera mCamera = null;
-    private boolean inPreview = false;
-    private boolean cameraConfigured = false;*/
 
     //Tutorial3 atributes clean after
 
@@ -68,12 +63,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private MenuItem[] mResolutionMenuItems;
     private SubMenu mResolutionMenu;
 
-    //Tutorial3 OpenCV caller, Switch to Service Caller
-
-     /*if (!OpenCVLoader.initDebug()) {
-            // Handle initialization error
-            Log.i(TAG, "Didn't work");
-        }*/
+    public Mat                    mGray;
+    public Mat                    mGray2;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -135,109 +126,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     private void processORB(){
 
-        if (imageView == null){
-            Log.i(TAG,"Holy shit");
-        }else{
-            Log.i(TAG,"nothing to see here");
-        }
-	imageView.setImageBitmap(FeatureDetectorAlgorithms.ORB(path1,path2));
+             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
+        if (img==null) { Log.i(TAG,"erro errado");} else imageView.setImageBitmap(img);
 
 
     }
 
-/*
-
-    private void startPreview() {
-        if (cameraConfigured && mCamera != null) {
-
-            mCamera.setDisplayOrientation(90);
-            mCamera.startPreview();
-            inPreview = true;
-        }
-    }
-*/
-
-/*
-    private Camera.Size getBestPreviewSize(int width, int height,
-                                           Camera.Parameters parameters) {
-        Camera.Size result = null;
-
-        for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
-            if (size.width <= width && size.height <= height) {
-                if (result == null) {
-                    result = size;
-                } else {
-                    int resultArea = result.width * result.height;
-                    int newArea = size.width * size.height;
-
-                    if (newArea > resultArea) {
-                        result = size;
-                    }
-                }
-            }
-        }
-        mCamera.setDisplayOrientation(90);
-        return (result);
-    }
-*/
-
-  /*  private void initPreview(int width, int height) {
-        if (mCamera != null && previewHolder.getSurface() != null) {
-            try {
-                mCamera.setPreviewDisplay(previewHolder);
-            } catch (Throwable t) {
-                Log.e("Preview-surfaceCallback",
-                        "Exception in setPreviewDisplay()", t);
-                Toast
-                        .makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG)
-                        .show();
-            }
-
-            if (!cameraConfigured) {
-                Camera.Parameters parameters = mCamera.getParameters();
-                Camera.Size size = getBestPreviewSize(width, height,
-                        parameters);
-
-                if (size != null) {
-                    parameters.setPreviewSize(size.width, size.height);
-                    mCamera.setParameters(parameters);
-                    cameraConfigured = true;
-                }
-            }
-        }
-    }*/
-/*
-    SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
-        public void surfaceCreated(SurfaceHolder holder) {
-            // no-op -- wait until surfaceChanged()
-            try {
-                //mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
-                mCamera = Camera.open();
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-            }
-            try {
-                mCamera.setPreviewDisplay(holder);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /*public void surfaceChanged(SurfaceHolder holder,
-                                   int format, int width,
-                                   int height) {
-            initPreview(width, height);
-            startPreview();
-        }
-
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            // Surface will be destroyed when we return, so stop the preview.
-            // Because the CameraDevice object is not a shared resource, it's very
-            // important to release it when the activity is paused.
-
-        }
-    };
-*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -262,13 +156,18 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mResolutionMenu = menu.addSubMenu("Resolution");
         mResolutionList = mOpenCvCameraView.getResolutionList();
         mResolutionMenuItems = new MenuItem[mResolutionList.size()];
-
         ListIterator<Size> resolutionItr = mResolutionList.listIterator();
         idx = 0;
         while(resolutionItr.hasNext()) {
             Size element = resolutionItr.next();
             mResolutionMenuItems[idx] = mResolutionMenu.add(2, idx, Menu.NONE,
                     Integer.valueOf(element.width).toString() + "x" + Integer.valueOf(element.height).toString());
+            if (element.height == 640 && element.width == 480){int id = idx;
+                Size resolution = mResolutionList.get(id);
+                mOpenCvCameraView.setResolution(resolution);
+                resolution = mOpenCvCameraView.getResolution();
+                String caption = Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
+                Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();}
             idx++;
         }
 
@@ -309,15 +208,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     protected void onPause() {
- /*       if (inPreview) {
-            mCamera.stopPreview();
-        }
-
-        mCamera.release();
-        mCamera = null;
-        inPreview = false;
-        super.onPause();*/
-
         super.onPause();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
@@ -326,25 +216,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     protected void onResume() {
-        /*super.onResume();
-        mCamera = Camera.open();
-        startPreview();*/
         super.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mLoaderCallback);
     }
 
     @Override
     protected void onDestroy() {
-/*        if (inPreview) {
-            mCamera.stopPreview();
-            inPreview = false;
-        }
-        if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
-        }
-        super.onDestroy();*/
-
         super.onDestroy();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
@@ -354,6 +231,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @SuppressLint("SimpleDateFormat")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
         Log.i(TAG,"onTouch event");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -370,10 +248,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         pathFlag = !pathFlag;
         Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
 
+
 		return false;
     }
 
     public void onCameraViewStarted(int width, int height) {
+        mGray = new Mat();
+        mGray2 = new Mat();
+
     }
 
     public void onCameraViewStopped() {
@@ -381,7 +263,33 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        return inputFrame.rgba();
+        if (mGray2 == null){
+            mGray = inputFrame.gray();
+            mGray2 = mGray;
+        }
+        else {
+            mGray2 = mGray;
+            mGray = inputFrame.gray();
+
+            Mat m1 = mGray;
+            Mat m2 = mGray2;
+
+            m1.convertTo(m1, CvType.CV_8U);
+            m2.convertTo(m2, CvType.CV_8U);
+
+            mGray = m1;
+            mGray2 = m2;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                processORB();
+//stuff that updates ui
+
+                }
+            });
+        }
+        return mGray;
     }
 
 

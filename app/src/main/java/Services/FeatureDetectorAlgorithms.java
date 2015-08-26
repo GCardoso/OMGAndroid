@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.calib3d.Calib3d;
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -74,14 +75,16 @@ public class FeatureDetectorAlgorithms {
 //        return imageMatched;
 //    }
 
-    public static Bitmap ORB(String firstPath, String secondPath){
+    public static Bitmap ORB(Mat firstPath, Mat secondPath){
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);;
         DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 
 
         //first image
-        Mat img_object = Highgui.imread(firstPath);
+
+        Mat img1 = //                Highgui.imread(firstPath);
+                firstPath;
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
 
@@ -89,16 +92,39 @@ public class FeatureDetectorAlgorithms {
         descriptor.compute(img_object, keypoints_object, descriptors1);
 
         //second image
-        Mat img_scene = Highgui.imread(secondPath);
+        Mat img2 = //Highgui.imread(secondPath);
+                secondPath;
+
         Mat descriptors2 = new Mat();
         MatOfKeyPoint keypoints_scene = new MatOfKeyPoint();
 
         detector.detect(img_scene, keypoints_scene);
         descriptor.compute(img_scene, keypoints_scene, descriptors2);
 
+        Log.i("CAMERAFRAME", "Types desc before : " + descriptors1.type() + " , " + descriptors2.type() + ".");
+        Log.i("CAMERAFRAME", "Rows desc before " + descriptors1.rows() + " m1 rows -> " + descriptors2.rows() + " m2 row");
+        Log.i("CAMERAFRAME", "Cols desc before " + descriptors1.cols() + " m1 rows -> " + descriptors2.cols() + " m2 row");
+        descriptors1.convertTo(descriptors1, CvType.CV_8U);
+        descriptors2.convertTo(descriptors2, CvType.CV_8U);
+
+        Log.i("CAMERAFRAME", "Types: " + img1.type() + " , " + img2.type() + ".");
+        Log.i("CAMERAFRAME", "Types desc after : " + descriptors1.type() + " , " + descriptors2.type() + ".");
+        Log.i("CAMERAFRAME", "Rows desc after " + descriptors1.rows() + " m1 rows -> " + descriptors2.rows() + " m2 row");
+        Log.i("CAMERAFRAME", "Cols desc after " + descriptors1.cols() + " m1 rows -> " + descriptors2.cols() + " m2 row");
+
         //matcher should include 2 different image's descriptors
         MatOfDMatch matches = new MatOfDMatch();
-        matcher.match(descriptors1,descriptors2,matches);
+        matches.convertTo(matches, CvType.CV_32F);
+        Log.i("CAMERAFRAME", "Type matches: " + matches.type());
+        try {
+            matcher.match(descriptors1,descriptors2,matches);
+        }catch (CvException e){
+			//Capturar Excecao de Matriz de Descritores vazia
+            if (descriptors1.cols()==0 || descriptors2.cols()==0 || descriptors1.rows()==0 || descriptors2.rows()==0){
+                Log.e("Matcher","Descriptors have 0 col or rows : d1 : "+ descriptors1.cols() + " x " + descriptors1.rows() + ", d2: " +descriptors2.cols() + " x " + descriptors2.rows() + " ." );
+                return null;
+            }
+        }
 
         List<DMatch> matcheslist = matches.toList();
 
