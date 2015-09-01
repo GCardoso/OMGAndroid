@@ -24,7 +24,6 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 import java.io.File;
@@ -53,7 +52,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private static String path1,path2;
     private static File defaultPicturesSaveFolder;
     private static int contFrames = 0;
-    private static final int FPS = 1;
+    private static final int FrameSkip = 10;
     private static int contadorLinhas = 0;
 
     //Tutorial3 atributes clean after
@@ -280,7 +279,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
             mGray = m1;
             mGray2 = m2;
-            if (contFrames++ == FPS){
+            if (contFrames++ == FrameSkip){
                 contFrames = 0;
             runOnUiThread(new Runnable() {
                 @Override

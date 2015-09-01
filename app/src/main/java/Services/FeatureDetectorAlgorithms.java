@@ -176,7 +176,7 @@ public class FeatureDetectorAlgorithms {
         //now find the homography matrix, we need 2 lists, in this case
         //will be form both images, but when used to recognize patterns, one is the train image
         //and the other is the scene to be recognized
-        List<KeyPoint> obj_keypont = filteredKeypointsList ;//keypoints_object.toList();
+        List<KeyPoint> obj_keypont = filteredKeypointsList;//keypoints_object.toList();
         List<KeyPoint> scene_keypont = filteredKeypointsList2 ;//keypoints_scene.toList();
 
         LinkedList<Point> obj_pointsList = new LinkedList<Point>();
@@ -187,7 +187,7 @@ public class FeatureDetectorAlgorithms {
                obj_pointsList.addLast(obj_keypont.get(goodMatches.get(i).queryIdx).pt);
                scene_pointsList.addLast(scene_keypont.get(goodMatches.get(i).trainIdx).pt);
            }catch (IndexOutOfBoundsException e){
-               Log.e(TAG,"Out of bounds on the goodmatches");
+               //Log.e(TAG,"Out of bounds on the goodmatches");
            }
         }
 
