@@ -143,6 +143,7 @@ public class FeatureDetectorAlgorithms {
         gm.fromList(goodMatches);
 
         Log.i(TAG,"gm Cols: " + String.valueOf(gm.cols()));
+        Log.i(TAG,"gm Rows: " + String.valueOf(gm.rows()));
         //feature and connection colors
         Scalar RED = new Scalar(255,0,0);
         Scalar GREEN = new Scalar(0,255,0);

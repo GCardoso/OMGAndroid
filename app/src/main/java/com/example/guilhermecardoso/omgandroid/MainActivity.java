@@ -138,7 +138,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
 
         //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
-        FeatureDetectorAlgorithms.ORB(path1, path2);
+        img = FeatureDetectorAlgorithms.ORB(path1   , path2);
         //}
 //=======
 //             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
