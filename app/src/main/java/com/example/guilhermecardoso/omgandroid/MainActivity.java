@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,9 +24,11 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -41,18 +44,20 @@ import Services.ServiceGyroscope;
 
 public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
     public static ImageView imageView;
+    public static ImageView imageView2;
     private ServiceGPSTracker serviceGPS;
     private ServiceGyroscope serviceXYZ;
     private SQLiteManager dbManager;
-	private TableHelper tableHelper;
+    private TableHelper tableHelper;
     private static String TAG = "Main Activity";
-	TableLayout mainTable;
+    TableLayout mainTable;
     private static boolean pathFlag = true;
     private static String path1,path2;
-
+    private static File defaultPicturesSaveFolder;
+    private static int contFrames = 0;
+    private static final int FPS =1;
     private static int contadorLinhas = 0;
-
-
+    private static Bitmap img;
     //Tutorial3 atributes clean after
 
     private OpenCVcameraView mOpenCvCameraView;
@@ -62,9 +67,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private MenuItem[] mResolutionMenuItems;
     private SubMenu mResolutionMenu;
 
-    public Mat                    mRgba;
     public Mat                    mGray;
-    public Mat                    mRgba2;
+    public Mat                    mRgba;
     public Mat                    mGray2;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -111,21 +115,28 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         setContentView(R.layout.cameraview);
         this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
-		mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
+        this.imageView2 = (ImageView) this.findViewById(R.id.imageViewPhotoTaken2);
+        mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         //mOpenCvCameraView.setResolution();
 
 
+        defaultPicturesSaveFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/PhotoGuide");
+        if(!defaultPicturesSaveFolder.exists()) {
+            defaultPicturesSaveFolder.mkdir();
+        }
 
     }
 
 
     private void processORB(){
 
-             Bitmap img = FeatureDetectorAlgorithms.ORB(mRgba, mRgba2);
-        if (img==null) { Log.i(TAG,"erro errado");} else imageView.setImageBitmap(img);
+        //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
+        FeatureDetectorAlgorithms.ORB(path1, path2);
+        //}
 
+        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
 
     }
 
@@ -205,10 +216,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     protected void onPause() {
-        super.onPause();
+
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
-
+        super.onPause();
 
     }
 
@@ -228,28 +239,29 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @SuppressLint("SimpleDateFormat")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-//        Log.i(TAG,"onTouch event");
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-//        String currentDateandTime = sdf.format(new Date());
-//
-//        String fileName =
-//                "/storage/emulated/0/PhotoGuide/sample_" + currentDateandTime + ".jpg";
-//
-//
-//        mOpenCvCameraView.takePicture(fileName);
-//        if(path1 != null && path2 !=null)processORB();
-//        if (pathFlag) path1 = fileName; else path2 = fileName;
-//        pathFlag = !pathFlag;
-//        Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
 
-		return false;
+        Log.i(TAG,"onTouch event");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateandTime = sdf.format(new Date());
+
+        String fileName =
+
+                defaultPicturesSaveFolder + "/sample_" + currentDateandTime + ".jpg";
+
+
+        mOpenCvCameraView.takePicture(fileName);
+        if(path1 != null && path2 !=null)processORB();
+        if (pathFlag) path1 = fileName; else path2 = fileName;
+        pathFlag = !pathFlag;
+        Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
+
+
+        return false;
     }
 
     public void onCameraViewStarted(int width, int height) {
-        mRgba = new Mat();
         mGray = new Mat();
-        mRgba2 = new Mat();
         mGray2 = new Mat();
 
     }
@@ -259,43 +271,64 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        if (mRgba2 == null){
-            mRgba = inputFrame.gray();
-            mRgba2 = mRgba;
-        }
-        else {
+        mRgba = inputFrame.rgba();
+//          Mat gray = inputFrame.gray();
+//
+//        Log.i(TAG,"framCont : " + contFrames);
+//
+//
+//           if (contFrames == FPS){
+//               if (mGray.cols() == 0 || mGray.rows() == 0){
+//                   mGray = inputFrame.gray();
+//                   Log.i(TAG, "Frame = mgray1");
+//                   contFrames = 0;
+//               }
+//               else {
+//
+//                   if (mGray2.cols() == 0 || mGray2.rows() == 0){
+//                       mGray2 = gray;
+//                       contFrames = 0;
+//                       Log.i(TAG, "frame = mgray2");
+//                   }else
+//                   if (pathFlag)  {mGray = gray;Log.i(TAG, "Frame = mgray1");}else {Log.i(TAG, "Frame = mgray2");mGray2 = gray;};
+//                   pathFlag = !pathFlag;
+//                contFrames = 0;
+//                   Log.i(TAG,"Mgray and MGray2 " + (mGray!=null) + (mGray2!=null));
+//                   Log.i(TAG,"Mgray and MGray2 " + mGray.rows() + " " + mGray.cols());
+//                   Log.i(TAG,"Mgray and MGray2 " + mGray2.rows() + " " + mGray2.cols());
+//                   //img = processORB();
+//
+//
+//
+//
+//           }
+//        }
+//        contFrames++;
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (contFrames == FPS){
+//                if (pathFlag && mGray.cols() > 0) {
+//                    Bitmap image = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.RGB_565);
+//                    Utils.matToBitmap(mGray, image);
+//                    imageView2.setImageBitmap(image);
+//                }
+//
+//                if (!pathFlag && mGray2.cols() > 0) {
+//                    Bitmap image = Bitmap.createBitmap(mGray2.cols(), mGray2.rows(), Bitmap.Config.RGB_565);
+//                    Utils.matToBitmap(mGray2, image);
+//                    imageView2.setImageBitmap(image);
+//                }
+//                if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
+//
+//                }
 
 
-            mRgba2 = mRgba;
-
-
-
-
-            mRgba = inputFrame.gray();
-
-
-
-            Mat m1 = mRgba;
-            Mat m2 = mRgba2;
-
-                m1.convertTo(m1, CvType.CV_8U);
-                m2.convertTo(m2, CvType.CV_8U);
-
-            mRgba = m1;
-            mRgba2 = m2;
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                processORB();
 //stuff that updates ui
-
-                }
-            });
-
-        }
-
-
+//
+//    }
+//
+//});
         return mRgba;
     }
 

@@ -74,15 +74,16 @@ public class FeatureDetectorAlgorithms {
 //        return imageMatched;
 //    }
 
-    public static Bitmap ORB(Mat firstPath, Mat secondPath){
+    //public static Bitmap ORB(Mat firstPath, Mat secondPath){
+    public static Bitmap ORB(String firstPath, String secondPath){
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);;
         DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 
 
         //first image
-        Mat img1 = //                Highgui.imread(firstPath);
-                firstPath;
+        Mat img1 =                 Highgui.imread(firstPath);
+                //firstPath;
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
 
@@ -90,8 +91,8 @@ public class FeatureDetectorAlgorithms {
         descriptor.compute(img1, keypoints1, descriptors1);
 
         //second image
-        Mat img2 = //Highgui.imread(secondPath);
-                secondPath;
+        Mat img2 = Highgui.imread(secondPath);
+        //        secondPath;
         Mat descriptors2 = new Mat();
         MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
 
