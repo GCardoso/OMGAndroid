@@ -78,10 +78,9 @@ public class FeatureDetectorAlgorithms {
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);;
         DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.BRUTEFORCE_HAMMING);
 
-
         //first image
-        Mat img_object = //Highgui.imread
-         (firstPath);
+        Mat img_object = (firstPath);//Highgui.imread
+
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
 
@@ -89,8 +88,8 @@ public class FeatureDetectorAlgorithms {
         descriptor.compute(img_object, keypoints_object, descriptors1);
 
         //second image
-        Mat img_scene = //Highgui.imread
-         (secondPath);
+        Mat img_scene = (secondPath);//Highgui.imread
+
         Mat descriptors2 = new Mat();
         MatOfKeyPoint keypoints_scene = new MatOfKeyPoint();
 
@@ -98,36 +97,71 @@ public class FeatureDetectorAlgorithms {
         descriptor.compute(img_scene, keypoints_scene, descriptors2);
 
         //matcher should include 2 different image's descriptors
-        MatOfDMatch matches = new MatOfDMatch();
+        MatOfDMatch matches12 = new MatOfDMatch();
+        MatOfDMatch matches21 = new MatOfDMatch();
+        MatOfDMatch filteredMatches = new MatOfDMatch();
         try {
-            matcher.match(descriptors1,descriptors2,matches);
+            matcher.match(descriptors1,descriptors2,matches12);
+            matcher.match(descriptors2,descriptors1,matches21);
         }catch (CvException e){
             if (descriptors1.cols()==0 || descriptors2.cols()==0 || descriptors1.rows()==0 || descriptors2.rows()==0){
                 Log.e("Matcher","Descriptors have 0 col or rows : d1 : "+ descriptors1.cols() + " x " + descriptors1.rows() + ", d2: " +descriptors2.cols() + " x " + descriptors2.rows() + " ." );
                 return null;
             }
         }
-        List<DMatch> matcheslist = matches.toList();
+
+        //Second Filtering, cross check
+        List<DMatch> matches12List=  matches12.toList();
+        List<DMatch> matches21List=  matches21.toList();
+        List<DMatch> filteredMatchesList = new LinkedList<DMatch>();
+        List<KeyPoint> keypointsList = keypoints_object.toList();
+        List<KeyPoint> keypointsList2 = keypoints_scene.toList();
+        LinkedList<KeyPoint> filteredKeypointsList = new LinkedList<KeyPoint>();
+
+        for (int i = 0; i < matches12List.size();i ++){
+            DMatch forward = matches12List.get(i);
+            DMatch backward = matches21List.get(forward.trainIdx);
+
+            if (backward.trainIdx ==  forward.queryIdx){
+                filteredMatchesList.add(forward);
+                filteredKeypointsList.addLast(keypointsList.get(i));
+            }
+        }
+
+        LinkedList<KeyPoint> filteredKeypointsList2 = new LinkedList<KeyPoint>();
+        for (int i = 0; i < matches21List.size();i ++){
+            DMatch forward = matches21List.get(i);
+            DMatch backward = matches12List.get(forward.trainIdx);
+
+            if (backward.trainIdx ==  forward.queryIdx){
+                //filteredMatchesList.add(forward);
+                filteredKeypointsList2.addLast(keypointsList2.get(i));
+            }
+        }
+
+        //First Filtering, ratio test
+        List<DMatch> matcheslist = matches12.toList();
 
         double maxDist = 0.0;
         double minDist = 100.0;
 
-        for (int i = 0; i < keypoints_object.rows(); i++){
-            double dist = matcheslist.get(i).distance;
+        //Antes ; for (int i = 0; i < keypoints_object.rows(); i++){ e matcheslist por filteredMatchesList
+        for (int i = 0; i < filteredKeypointsList.size(); i++){
+            double dist = filteredMatchesList.get(i).distance;
             if (dist < minDist) {
                 minDist = dist;
             }
-
             if (dist > maxDist){
                 maxDist = dist;
             }
         }
 
         //Adding only matches that has no more than 3 times the minimum distance
+        //Antes era descriptors1.rows() ao inves de filterd keypoint list
         LinkedList<DMatch> goodMatches = new LinkedList<DMatch>();
-        for (int i = 0; i < descriptors1.rows(); i++){
-            if (matcheslist.get(i).distance < 3 * minDist){
-                goodMatches.addLast(matcheslist.get(i));
+        for (int i = 0; i < filteredKeypointsList.size(); i++){
+            if (filteredMatchesList.get(i).distance < 3 * minDist){
+                goodMatches.addLast(filteredMatchesList.get(i));
             }
         }
 
@@ -138,18 +172,23 @@ public class FeatureDetectorAlgorithms {
         Scalar RED = new Scalar(255,0,0);
         Scalar GREEN = new Scalar(0,255,0);
 
+        //Last Filtering
         //now find the homography matrix, we need 2 lists, in this case
         //will be form both images, but when used to recognize patterns, one is the train image
         //and the other is the scene to be recognized
-        List<KeyPoint> obj_keypont = keypoints_object.toList();
-        List<KeyPoint> scene_keypont = keypoints_scene.toList();
+        List<KeyPoint> obj_keypont = filteredKeypointsList ;//keypoints_object.toList();
+        List<KeyPoint> scene_keypont = filteredKeypointsList2 ;//keypoints_scene.toList();
 
         LinkedList<Point> obj_pointsList = new LinkedList<Point>();
         LinkedList<Point> scene_pointsList = new LinkedList<Point>();
 
         for (int i = 0; i < goodMatches.size(); i++){
-            obj_pointsList.addLast(obj_keypont.get(goodMatches.get(i).queryIdx).pt);
-            scene_pointsList.addLast(scene_keypont.get(goodMatches.get(i).trainIdx).pt);
+           try {
+               obj_pointsList.addLast(obj_keypont.get(goodMatches.get(i).queryIdx).pt);
+               scene_pointsList.addLast(scene_keypont.get(goodMatches.get(i).trainIdx).pt);
+           }catch (IndexOutOfBoundsException e){
+               Log.e(TAG,"Out of bounds on the goodmatches");
+           }
         }
 
         //Now is needed to convert to matOfPoint2f so we can use the finHomography function
@@ -177,17 +216,17 @@ public class FeatureDetectorAlgorithms {
         List<KeyPoint> listOfGoodKeypointsObj = keypoints_object.toList();
         List<KeyPoint> listOfGoodKeypointsScene = keypoints_scene.toList();
         for (int i = 0; i < inliners.rows(); i++){
-            StringBuilder sb = new StringBuilder("");
+            //StringBuilder sb = new StringBuilder("");
             for (int j = 0; j < inliners.cols(); j++){
                 double[] indexes = inliners.get(i,j);
                 for (int k = 0; k < indexes.length; k++){
-                    sb.append(indexes[k] + " ");
+                    //sb.append(indexes[k] + " ");
                     if (indexes[k] <= 0){
                         listOfGoodKeypointsObj.remove(keypoints_object.get(i,j));
                         listOfGoodKeypointsScene.remove(keypoints_scene.get(i,j));
                     }
                 }
-                Log.i(TAG,"inliners(" + i + "," + j + ") -> " + sb.toString());
+                //Log.i(TAG,"inliners(" + i + "," + j + ") -> " + sb.toString());
 //                Log.i(TAG,"inliners size = " + inliners.size());
 //                Log.i(TAG,"obj size = " + obj.size());
 //                Log.i(TAG,"scene size = " + scene.size());
@@ -252,5 +291,5 @@ public class FeatureDetectorAlgorithms {
         }
         return new MatOfPoint2f(lp2.toArray(new Point[0]));
     }
-    
+
 }

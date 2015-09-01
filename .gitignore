@@ -75,3 +75,7 @@ openCVLibrary249/build/intermediates/res/androidTest/debug/values/values.xml
 openCVLibrary249/build/intermediates/resources/resources-debug-androidTest.ap_
 openCVLibrary249/build/outputs/aar/openCVLibrary249-debug.aar
 openCVLibrary249/build/outputs/aar/openCVLibrary249-release.aar
+
+.gradle/2.2.1/taskArtifacts/cache.properties.lock
+
+.gradle/2.2.1/taskArtifacts/cache.properties.lock
