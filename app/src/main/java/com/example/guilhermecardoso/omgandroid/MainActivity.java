@@ -55,9 +55,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private static String path1,path2;
     private static File defaultPicturesSaveFolder;
     private static int contFrames = 0;
+
     private static final int FPS =1;
     private static int contadorLinhas = 0;
     private static Bitmap img;
+
     //Tutorial3 atributes clean after
 
     private OpenCVcameraView mOpenCvCameraView;
@@ -68,7 +70,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private SubMenu mResolutionMenu;
 
     public Mat                    mGray;
+
     public Mat                    mRgba;
+
     public Mat                    mGray2;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -132,9 +136,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     private void processORB(){
 
+
         //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
         FeatureDetectorAlgorithms.ORB(path1, path2);
         //}
+//=======
+//             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
+//        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
+//>>>>>>> bd2d8ed33eee3a83a68eb947e6075669a861038e
 
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
 
@@ -240,6 +249,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
+
         Log.i(TAG,"onTouch event");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -271,6 +281,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+
         mRgba = inputFrame.rgba();
 //          Mat gray = inputFrame.gray();
 //
@@ -330,6 +341,36 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 //
 //});
         return mRgba;
+//=======
+//
+//
+//        if (mGray2 == null){
+//            mGray = inputFrame.gray();
+//            mGray2 = mGray;
+//        }
+//        else {
+//            mGray2 = mGray;
+//            mGray = inputFrame.gray();
+//
+//            Mat m1 = mGray;
+//            Mat m2 = mGray2;
+//
+//            mGray = m1;
+//            mGray2 = m2;
+//            if (contFrames++ == FPS){
+//                contFrames = 0;
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                processORB();
+////stuff that updates ui
+//
+//                }
+//            });
+//        }
+//        }
+//        return inputFrame.rgba();
+//>>>>>>> bd2d8ed33eee3a83a68eb947e6075669a861038e
     }
 
 
