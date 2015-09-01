@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.opencv.android.Utils;
+import org.opencv.calib3d.Calib3d;
+import org.opencv.core.CvException;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfDMatch;
@@ -72,6 +75,7 @@ public class FeatureDetectorAlgorithms {
 //        return imageMatched;
 //    }
 
+    //public static Bitmap ORB(Mat firstPath, Mat secondPath){
     public static Bitmap ORB(String firstPath, String secondPath){
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);;
@@ -79,33 +83,45 @@ public class FeatureDetectorAlgorithms {
 
 
         //first image
-        Mat img1 = Highgui.imread(firstPath);
-        Mat descriptors1 = new Mat();
-        MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
 
-        detector.detect(img1, keypoints1);
-        descriptor.compute(img1, keypoints1, descriptors1);
+        Mat img_object = Highgui.imread
+         (firstPath);
+
+        Mat descriptors1 = new Mat();
+        MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
+
+        detector.detect(img_object, keypoints_object);
+        descriptor.compute(img_object, keypoints_object, descriptors1);
 
         //second image
-        Mat img2 = Highgui.imread(secondPath);
-        Mat descriptors2 = new Mat();
-        MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
 
-        detector.detect(img2, keypoints2);
-        descriptor.compute(img2, keypoints2, descriptors2);
+        Mat img_scene = Highgui.imread
+         (secondPath);
+
+        Mat descriptors2 = new Mat();
+        MatOfKeyPoint keypoints_scene = new MatOfKeyPoint();
+
+        detector.detect(img_scene, keypoints_scene);
+        descriptor.compute(img_scene, keypoints_scene, descriptors2);
 
         //matcher should include 2 different image's descriptors
         MatOfDMatch matches = new MatOfDMatch();
-        matcher.match(descriptors1,descriptors2,matches);
-
+        try {
+            matcher.match(descriptors1,descriptors2,matches);
+        }catch (CvException e){
+            if (descriptors1.cols()==0 || descriptors2.cols()==0 || descriptors1.rows()==0 || descriptors2.rows()==0){
+                Log.e("Matcher","Descriptors have 0 col or rows : d1 : "+ descriptors1.cols() + " x " + descriptors1.rows() + ", d2: " +descriptors2.cols() + " x " + descriptors2.rows() + " ." );
+                return null;
+            }
+        }
         List<DMatch> matcheslist = matches.toList();
 
         double maxDist = 0.0;
         double minDist = 100.0;
 
-        for (int i = 0; i < keypoints1.rows(); i++){
+        for (int i = 0; i < keypoints_object.rows(); i++){
             double dist = matcheslist.get(i).distance;
-            if (dist < minDist){
+            if (dist < minDist) {
                 minDist = dist;
             }
 
@@ -122,29 +138,90 @@ public class FeatureDetectorAlgorithms {
                 goodMatches.addLast(matcheslist.get(i));
             }
         }
-        DMatch goodMatchesArray[] = new DMatch[goodMatches.size()];
-
-        for (int i = 0; i < goodMatches.size(); i++){
-            goodMatchesArray[i] = goodMatches.get(i);
-        }
 
         MatOfDMatch gm = new MatOfDMatch();
-        gm.fromArray(goodMatchesArray);
+        gm.fromList(goodMatches);
 
-
+        Log.i(TAG,"gm Cols: " + String.valueOf(gm.cols()));
+        Log.i(TAG,"gm Rows: " + String.valueOf(gm.rows()));
         //feature and connection colors
         Scalar RED = new Scalar(255,0,0);
         Scalar GREEN = new Scalar(0,255,0);
 
-        //output image
+        //now find the homography matrix
+        List<KeyPoint> obj_keypont = keypoints_object.toList();
+        List<KeyPoint> scene_keypont = keypoints_scene.toList();
+
+        LinkedList<Point> obj_pointsList = new LinkedList<Point>();
+        LinkedList<Point> scene_pointsList = new LinkedList<Point>();
+
+        for (int i = 0; i < goodMatches.size(); i++){
+            obj_pointsList.addLast(obj_keypont.get(goodMatches.get(i).queryIdx).pt);
+            scene_pointsList.addLast(scene_keypont.get(goodMatches.get(i).trainIdx).pt);
+        }
+
+        MatOfPoint2f obj = new MatOfPoint2f();
+        obj.fromList(obj_pointsList);
+        MatOfPoint2f scene = new MatOfPoint2f();
+        scene.fromList(scene_pointsList);
+        Mat inliners = new Mat();
+
+        if (obj.dims() == 0 || scene.dims() == 0) {
+            Log.e(TAG,"Keypoints dimentions are 0");
+            return null;
+        }
+
+        try {
+            Mat homography = Calib3d.findHomography(obj,scene,Calib3d.RANSAC,1,inliners);
+        }catch (CvException e){
+                e.printStackTrace();
+                return null;
+            }
+
+
+        Mat obj_corners = new Mat(4,1, CvType.CV_32FC2);
+        Mat scene_corners = new Mat(4,1,CvType.CV_32FC2);
+
+
+        //Cleaning not good matches
         Mat outputImg = new Mat();
-        MatOfByte drawnMatches = new MatOfByte();
+        List<KeyPoint> listOfGoodKeypointsObj = keypoints_object.toList();
+        List<KeyPoint> listOfGoodKeypointsScene = keypoints_scene.toList();
+        for (int i = 0; i < inliners.rows(); i++){
+            StringBuilder sb = new StringBuilder("");
+            for (int j = 0; j < inliners.cols(); j++){
+                double[] indexes = inliners.get(i,j);
+                for (int k = 0; k < indexes.length; k++){
+                    sb.append(indexes[k] + " ");
+                    if (indexes[k] <= 0){
+                        listOfGoodKeypointsObj.remove(keypoints_object.get(i,j));
+                        listOfGoodKeypointsScene.remove(keypoints_scene.get(i,j));
+                    }
+                }
+                Log.i(TAG,"inliners(" + i + "," + j + ") -> " + sb.toString());
+//                Log.i(TAG,"inliners size = " + inliners.size());
+//                Log.i(TAG,"obj size = " + obj.size());
+//                Log.i(TAG,"scene size = " + scene.size());
+            }
+        }
 
-        matches = new MatOfDMatch();
-
+        //output image
         //this will draw all matches, works fine
-        Features2d.drawMatches(img1, keypoints1, img2, keypoints2, gm,
-                outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
+        //Features2d.drawMatches(img_object, keypoints_object, img_scene, keypoints_scene, gm,
+        //        outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
+        //Features2d.drawMatches(img_object,keypoints_object,img_scene,keypoints_scene,gm,outputImg,GREEN,RED,new MatOfByte(inliners),Features2d.NOT_DRAW_SINGLE_POINTS);
+        MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
+        keypoints1.fromList(listOfGoodKeypointsObj);
+        MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
+        keypoints2.fromList(listOfGoodKeypointsScene);
+        //Features2d.drawMatches(firstPath, keypoints1, secondPath, keypoints2, gm, outputImg, GREEN, RED, new MatOfByte(inliners), Features2d.NOT_DRAW_SINGLE_POINTS);
+
+        Features2d.drawMatches(img_object, keypoints1, img_scene, keypoints2, gm, outputImg, GREEN, RED, new MatOfByte(), Features2d.NOT_DRAW_SINGLE_POINTS);
+
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0,255,0), 4);
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
+//        Core.line(img_object, new Point(), new Point(), new Scalar(0, 255, 0), 4);
 
         Bitmap imageMatched = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(), Bitmap.Config.RGB_565);//need to save bitmap
         Utils.matToBitmap(outputImg, imageMatched);
