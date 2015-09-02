@@ -99,7 +99,6 @@ public class FeatureDetectorAlgorithms {
         //matcher should include 2 different image's descriptors
         MatOfDMatch matches12 = new MatOfDMatch();
         MatOfDMatch matches21 = new MatOfDMatch();
-        MatOfDMatch filteredMatches = new MatOfDMatch();
         try {
             matcher.match(descriptors1,descriptors2,matches12);
             matcher.match(descriptors2,descriptors1,matches21);
