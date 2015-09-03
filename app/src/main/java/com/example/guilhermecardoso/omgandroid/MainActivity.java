@@ -24,8 +24,10 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
+
 import org.opencv.core.Mat;
 
 import java.io.File;
@@ -56,7 +58,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private static File defaultPicturesSaveFolder;
     private static int contFrames = 0;
 
-    private static final int FPS =20;
+    private static final int FrameSkip = 10;
+
     private static int contadorLinhas = 0;
     private static Bitmap img;
 
@@ -293,6 +296,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
+
         mRgba = inputFrame.rgba();
 //        Mat gray = inputFrame.gray();
 //
@@ -370,6 +374,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 //        }
 //        return inputFrame.rgba();
 //>>>>>>> bd2d8ed33eee3a83a68eb947e6075669a861038e
+
     }
 
 
