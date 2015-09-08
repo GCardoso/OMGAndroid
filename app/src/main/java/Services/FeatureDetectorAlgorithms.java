@@ -191,6 +191,32 @@ public class FeatureDetectorAlgorithms {
         return filteredKeypoints;
     }
 
+    private static LinkedList<DMatch> ratioTest(LinkedList<KeyPoint> filteredKeypointsList, List<DMatch> filteredMatchesList){
+        double maxDist = 0.0;
+        double minDist = 100.0;
+
+        for (int i = 0; i < filteredKeypointsList.size(); i++){
+            double dist = filteredMatchesList.get(i).distance;
+            if (dist < minDist) {
+                minDist = dist;
+            }
+            if (dist > maxDist){
+                maxDist = dist;
+            }
+        }
+
+        //Adding only matches that has no more than 3 times the minimum distance
+        //Antes era descriptors1.rows() ao inves de filterd keypoint list
+        LinkedList<DMatch> goodMatches = new LinkedList<DMatch>();
+        for (int i = 0; i < filteredKeypointsList.size(); i++){
+            if (filteredMatchesList.get(i).distance < 3 * minDist){
+                goodMatches.addLast(filteredMatchesList.get(i));
+            }
+        }
+
+        return goodMatches;
+    }
+
     public static Bitmap ORB(Mat firstPath, Mat secondPath){
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);;
@@ -231,40 +257,11 @@ public class FeatureDetectorAlgorithms {
         List<DMatch> filteredMatchesList = new LinkedList<DMatch>();
         List<DMatch> filteredMatchesList2 = new LinkedList<DMatch>();
 
-        List<KeyPoint> keypointsList = keypoints_object.toList();
-        List<KeyPoint> keypointsList2 = keypoints_scene.toList();
-
-        LinkedList<KeyPoint> filteredKeypointsList = new LinkedList<KeyPoint>();
-        LinkedList<KeyPoint> filteredKeypointsList2 = new LinkedList<KeyPoint>();
-
-        filteredKeypointsList = crossCheck(matches12.toList(), matches21.toList(), keypointsList, filteredMatchesList);
-        filteredKeypointsList2 = crossCheck(matches21.toList(),matches12.toList(),keypointsList2,filteredMatchesList2);
+        LinkedList<KeyPoint> filteredKeypointsList = crossCheck(matches12.toList(), matches21.toList(), keypoints_object.toList(), filteredMatchesList);
+        LinkedList<KeyPoint> filteredKeypointsList2 = crossCheck(matches21.toList(),matches12.toList(),keypoints_scene.toList(),filteredMatchesList2);
 
         //Second Filtering, ratio test
-        List<DMatch> matcheslist = matches12.toList();
-
-        double maxDist = 0.0;
-        double minDist = 100.0;
-
-        //Antes ; for (int i = 0; i < keypoints_object.rows(); i++){ e matcheslist por filteredMatchesList
-        for (int i = 0; i < filteredKeypointsList.size(); i++){
-            double dist = filteredMatchesList.get(i).distance;
-            if (dist < minDist) {
-                minDist = dist;
-            }
-            if (dist > maxDist){
-                maxDist = dist;
-            }
-        }
-
-        //Adding only matches that has no more than 3 times the minimum distance
-        //Antes era descriptors1.rows() ao inves de filterd keypoint list
-        LinkedList<DMatch> goodMatches = new LinkedList<DMatch>();
-        for (int i = 0; i < filteredKeypointsList.size(); i++){
-            if (filteredMatchesList.get(i).distance < 3 * minDist){
-                goodMatches.addLast(filteredMatchesList.get(i));
-            }
-        }
+        LinkedList<DMatch> goodMatches = ratioTest(filteredKeypointsList,filteredMatchesList);
 
         MatOfDMatch goodMatchesMat = new MatOfDMatch();
         goodMatchesMat.fromList(goodMatches);
