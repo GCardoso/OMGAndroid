@@ -128,6 +128,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private void processORB(){
 
              Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
+
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
 
 

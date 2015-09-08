@@ -7,13 +7,21 @@
   </component>
   <component name="AndroidLogFilters">
     <option name="TOOL_WINDOW_CUSTOM_FILTER" value="PhotoGuide" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="caaa63c6-5350-4c44-8889-9476a63e26d4" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileHashes.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java" afterPath="$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/example/guilhermecardoso/omgandroid/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/guilhermecardoso/omgandroid/MainActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PhotoGuide.iml" afterPath="$PROJECT_DIR$/PhotoGuide.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/local.properties" afterPath="$PROJECT_DIR$/local.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/openCVLibrary249/openCVLibrary249.iml" afterPath="$PROJECT_DIR$/openCVLibrary249/openCVLibrary249.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PhotoGuide.iws" />
@@ -46,18 +54,23 @@
       <file leaf-file-name="FeatureDetectorAlgorithms.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.91386557">
-              <caret line="161" column="55" selection-start-line="161" selection-start-column="54" selection-end-line="161" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.5044843">
+              <caret line="242" column="16" selection-start-line="242" selection-start-column="16" selection-end-line="242" selection-end-column="16" />
               <folding>
                 <element signature="e#912#980#0" expanded="false" />
-                <element signature="e#4585#4593#0" expanded="true" />
-                <element signature="e#4796#4806#0" expanded="true" />
-                <element signature="e#5255#5265#0" expanded="true" />
-                <element signature="e#6420#6428#0" expanded="true" />
-                <element signature="e#7368#7375#0" expanded="true" />
-                <element signature="e#7438#7445#0" expanded="true" />
-                <element signature="e#11319#11326#0" expanded="true" />
-                <element signature="e#11885#11892#0" expanded="true" />
+                <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+                <element signature="e#4210#4217#0" expanded="true" />
+                <element signature="e#4280#4287#0" expanded="true" />
+                <element signature="e#7238#7248#0" expanded="true" />
+                <element signature="e#9397#9405#0" expanded="true" />
+                <element signature="e#9467#9475#0" expanded="true" />
+                <element signature="e#9680#9690#0" expanded="true" />
+                <element signature="e#9762#9772#0" expanded="true" />
+                <element signature="e#10790#10798#0" expanded="true" />
+                <element signature="e#11738#11745#0" expanded="true" />
+                <element signature="e#11808#11815#0" expanded="true" />
+                <element signature="e#15685#15692#0" expanded="true" />
+                <element signature="e#16251#16258#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -67,7 +80,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/guilhermecardoso/omgandroid/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="54" column="43" selection-start-line="54" selection-start-column="43" selection-end-line="54" selection-end-column="43" />
+              <caret line="129" column="0" selection-start-line="129" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -1692,7 +1705,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5757846316940" />
+        <entry key="$PROJECT_DIR$" value="5759768963000" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2316,6 +2329,7 @@
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
       <module name="" />
       <option name="ACTIVITY_CLASS" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
       <option name="DEPLOY" value="true" />
       <option name="ARTIFACT_NAME" value="" />
@@ -2331,10 +2345,15 @@
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
       <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SELECTED_MATRIX_CONFIGURATION_ID" value="0" />
-      <option name="SELECTED_CLOUD_PROJECT_ID" value="" />
-      <option name="IS_VALID_CLOUD_SELECTION" value="false" />
-      <option name="INVALID_CLOUD_SELECTION_ERROR" value="" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
       <method />
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
@@ -2356,10 +2375,15 @@
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
       <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SELECTED_MATRIX_CONFIGURATION_ID" value="0" />
-      <option name="SELECTED_CLOUD_PROJECT_ID" value="" />
-      <option name="IS_VALID_CLOUD_SELECTION" value="false" />
-      <option name="INVALID_CLOUD_SELECTION_ERROR" value="" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -2458,6 +2482,7 @@
     <configuration default="false" name="app" type="AndroidRunConfigurationType" factoryName="Android Application">
       <module name="app" />
       <option name="ACTIVITY_CLASS" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
       <option name="DEPLOY" value="true" />
       <option name="ARTIFACT_NAME" value="" />
@@ -2473,10 +2498,15 @@
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
       <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SELECTED_MATRIX_CONFIGURATION_ID" value="0" />
-      <option name="SELECTED_CLOUD_PROJECT_ID" value="" />
-      <option name="IS_VALID_CLOUD_SELECTION" value="false" />
-      <option name="INVALID_CLOUD_SELECTION_ERROR" value="" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
       <method />
     </configuration>
     <list size="1">
@@ -2513,22 +2543,23 @@
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32577905" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32577905" sideWeight="0.49676898" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28611898" sideWeight="0.51342285" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3286119" sideWeight="0.503231" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3286119" sideWeight="0.49676898" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32986626" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28895184" sideWeight="0.49676898" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28895184" sideWeight="0.49353796" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286119" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28611898" sideWeight="0.48657718" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23990306" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39943343" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -2539,6 +2570,7 @@
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="100" y="100" width="1166" height="568" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28611898" sideWeight="0.48303714" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -2584,20 +2616,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java</url>
-          <line>240</line>
-          <properties />
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java</url>
-          <line>238</line>
-          <properties />
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="15" />
     </breakpoint-manager>
     <watches-manager />
@@ -2606,17 +2624,84 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
+          <caret line="170" column="82" selection-start-line="170" selection-start-column="82" selection-end-line="170" selection-end-column="82" />
+          <folding>
+            <element signature="e#912#980#0" expanded="false" />
+            <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+            <element signature="e#4210#4217#0" expanded="true" />
+            <element signature="e#4280#4287#0" expanded="true" />
+            <element signature="e#7238#7248#0" expanded="true" />
+            <element signature="e#9397#9405#0" expanded="true" />
+            <element signature="e#9467#9475#0" expanded="true" />
+            <element signature="e#9680#9690#0" expanded="true" />
+            <element signature="e#9762#9772#0" expanded="true" />
+            <element signature="e#10790#10798#0" expanded="true" />
+            <element signature="e#11738#11745#0" expanded="true" />
+            <element signature="e#11808#11815#0" expanded="true" />
+            <element signature="e#15685#15692#0" expanded="true" />
+            <element signature="e#16251#16258#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/guilhermecardoso/omgandroid/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="129" column="56" selection-start-line="129" selection-start-column="56" selection-end-line="129" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#912#980#0" expanded="false" />
+            <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+            <element signature="e#4210#4217#0" expanded="true" />
+            <element signature="e#4280#4287#0" expanded="true" />
+            <element signature="e#7238#7248#0" expanded="true" />
+            <element signature="e#9397#9405#0" expanded="true" />
+            <element signature="e#9467#9475#0" expanded="true" />
+            <element signature="e#9680#9690#0" expanded="true" />
+            <element signature="e#9762#9772#0" expanded="true" />
+            <element signature="e#10790#10798#0" expanded="true" />
+            <element signature="e#11738#11745#0" expanded="true" />
+            <element signature="e#11808#11815#0" expanded="true" />
+            <element signature="e#15685#15692#0" expanded="true" />
+            <element signature="e#16251#16258#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/guilhermecardoso/omgandroid/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="54" column="43" selection-start-line="54" selection-start-column="43" selection-end-line="54" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
           <caret line="187" column="86" selection-start-line="187" selection-start-column="86" selection-end-line="187" selection-end-column="86" />
           <folding>
             <element signature="e#912#980#0" expanded="false" />
-            <element signature="e#4585#4593#0" expanded="true" />
-            <element signature="e#4796#4806#0" expanded="true" />
-            <element signature="e#5255#5265#0" expanded="true" />
-            <element signature="e#6420#6428#0" expanded="true" />
-            <element signature="e#7368#7375#0" expanded="true" />
-            <element signature="e#7438#7445#0" expanded="true" />
-            <element signature="e#11319#11326#0" expanded="true" />
-            <element signature="e#11885#11892#0" expanded="true" />
+            <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+            <element signature="e#4210#4217#0" expanded="true" />
+            <element signature="e#4280#4287#0" expanded="true" />
+            <element signature="e#7238#7248#0" expanded="true" />
+            <element signature="e#9397#9405#0" expanded="true" />
+            <element signature="e#9467#9475#0" expanded="true" />
+            <element signature="e#9680#9690#0" expanded="true" />
+            <element signature="e#9762#9772#0" expanded="true" />
+            <element signature="e#10790#10798#0" expanded="true" />
+            <element signature="e#11738#11745#0" expanded="true" />
+            <element signature="e#11808#11815#0" expanded="true" />
+            <element signature="e#15685#15692#0" expanded="true" />
+            <element signature="e#16251#16258#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2627,14 +2712,19 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#912#980#0" expanded="false" />
-            <element signature="e#4585#4593#0" expanded="true" />
-            <element signature="e#4796#4806#0" expanded="true" />
-            <element signature="e#5255#5265#0" expanded="true" />
-            <element signature="e#6420#6428#0" expanded="true" />
-            <element signature="e#7368#7375#0" expanded="true" />
-            <element signature="e#7438#7445#0" expanded="true" />
-            <element signature="e#11319#11326#0" expanded="true" />
-            <element signature="e#11885#11892#0" expanded="true" />
+            <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+            <element signature="e#4210#4217#0" expanded="true" />
+            <element signature="e#4280#4287#0" expanded="true" />
+            <element signature="e#7238#7248#0" expanded="true" />
+            <element signature="e#9397#9405#0" expanded="true" />
+            <element signature="e#9467#9475#0" expanded="true" />
+            <element signature="e#9680#9690#0" expanded="true" />
+            <element signature="e#9762#9772#0" expanded="true" />
+            <element signature="e#10790#10798#0" expanded="true" />
+            <element signature="e#11738#11745#0" expanded="true" />
+            <element signature="e#11808#11815#0" expanded="true" />
+            <element signature="e#15685#15692#0" expanded="true" />
+            <element signature="e#16251#16258#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2645,14 +2735,19 @@
           <caret line="370" column="42" selection-start-line="370" selection-start-column="42" selection-end-line="370" selection-end-column="42" />
           <folding>
             <element signature="e#912#980#0" expanded="false" />
-            <element signature="e#4585#4593#0" expanded="true" />
-            <element signature="e#4796#4806#0" expanded="true" />
-            <element signature="e#5255#5265#0" expanded="true" />
-            <element signature="e#6420#6428#0" expanded="true" />
-            <element signature="e#7368#7375#0" expanded="true" />
-            <element signature="e#7438#7445#0" expanded="true" />
-            <element signature="e#11319#11326#0" expanded="true" />
-            <element signature="e#11885#11892#0" expanded="true" />
+            <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+            <element signature="e#4210#4217#0" expanded="true" />
+            <element signature="e#4280#4287#0" expanded="true" />
+            <element signature="e#7238#7248#0" expanded="true" />
+            <element signature="e#9397#9405#0" expanded="true" />
+            <element signature="e#9467#9475#0" expanded="true" />
+            <element signature="e#9680#9690#0" expanded="true" />
+            <element signature="e#9762#9772#0" expanded="true" />
+            <element signature="e#10790#10798#0" expanded="true" />
+            <element signature="e#11738#11745#0" expanded="true" />
+            <element signature="e#11808#11815#0" expanded="true" />
+            <element signature="e#15685#15692#0" expanded="true" />
+            <element signature="e#16251#16258#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2707,14 +2802,19 @@
           <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
           <folding>
             <element signature="e#912#980#0" expanded="false" />
-            <element signature="e#4585#4593#0" expanded="true" />
-            <element signature="e#4796#4806#0" expanded="true" />
-            <element signature="e#5255#5265#0" expanded="true" />
-            <element signature="e#6420#6428#0" expanded="true" />
-            <element signature="e#7368#7375#0" expanded="true" />
-            <element signature="e#7438#7445#0" expanded="true" />
-            <element signature="e#11319#11326#0" expanded="true" />
-            <element signature="e#11885#11892#0" expanded="true" />
+            <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+            <element signature="e#4210#4217#0" expanded="true" />
+            <element signature="e#4280#4287#0" expanded="true" />
+            <element signature="e#7238#7248#0" expanded="true" />
+            <element signature="e#9397#9405#0" expanded="true" />
+            <element signature="e#9467#9475#0" expanded="true" />
+            <element signature="e#9680#9690#0" expanded="true" />
+            <element signature="e#9762#9772#0" expanded="true" />
+            <element signature="e#10790#10798#0" expanded="true" />
+            <element signature="e#11738#11745#0" expanded="true" />
+            <element signature="e#11808#11815#0" expanded="true" />
+            <element signature="e#15685#15692#0" expanded="true" />
+            <element signature="e#16251#16258#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2785,25 +2885,38 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/guilhermecardoso/omgandroid/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="54" column="43" selection-start-line="54" selection-start-column="43" selection-end-line="54" selection-end-column="43" />
+          <caret line="129" column="0" selection-start-line="129" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Android/sdk/sources/android-22/java/util/Arrays.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-94.414795">
+          <caret line="65" column="0" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/Services/FeatureDetectorAlgorithms.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.91386557">
-          <caret line="161" column="55" selection-start-line="161" selection-start-column="54" selection-end-line="161" selection-end-column="55" />
+        <state vertical-scroll-proportion="0.5044843">
+          <caret line="242" column="16" selection-start-line="242" selection-start-column="16" selection-end-line="242" selection-end-column="16" />
           <folding>
             <element signature="e#912#980#0" expanded="false" />
-            <element signature="e#4585#4593#0" expanded="true" />
-            <element signature="e#4796#4806#0" expanded="true" />
-            <element signature="e#5255#5265#0" expanded="true" />
-            <element signature="e#6420#6428#0" expanded="true" />
-            <element signature="e#7368#7375#0" expanded="true" />
-            <element signature="e#7438#7445#0" expanded="true" />
-            <element signature="e#11319#11326#0" expanded="true" />
-            <element signature="e#11885#11892#0" expanded="true" />
+            <element signature="method#ORB2#0;class#FeatureDetectorAlgorithms#0" expanded="false" />
+            <element signature="e#4210#4217#0" expanded="true" />
+            <element signature="e#4280#4287#0" expanded="true" />
+            <element signature="e#7238#7248#0" expanded="true" />
+            <element signature="e#9397#9405#0" expanded="true" />
+            <element signature="e#9467#9475#0" expanded="true" />
+            <element signature="e#9680#9690#0" expanded="true" />
+            <element signature="e#9762#9772#0" expanded="true" />
+            <element signature="e#10790#10798#0" expanded="true" />
+            <element signature="e#11738#11745#0" expanded="true" />
+            <element signature="e#11808#11815#0" expanded="true" />
+            <element signature="e#15685#15692#0" expanded="true" />
+            <element signature="e#16251#16258#0" expanded="true" />
           </folding>
         </state>
       </provider>
