@@ -31,6 +31,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -148,19 +149,27 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 //             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
 //        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
 //>>>>>>> bd2d8ed33eee3a83a68eb947e6075669a861038e
-        if (pathFlag && mGray.cols() > 0) {
-            Bitmap image = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.RGB_565);
-            Utils.matToBitmap(mGray, image);
-            imageView2.setImageBitmap(image);
-        }
+//        if (pathFlag && mGray.cols() > 0) {
+//            Bitmap image = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.RGB_565);
+//            Utils.matToBitmap(mGray, image);
+//            imageView2.setImageBitmap(image);
+//        }
+//
+//        if (!pathFlag && mGray2.cols() > 0) {
+//            Bitmap image = Bitmap.createBitmap(mGray2.cols(), mGray2.rows(), Bitmap.Config.RGB_565);
+//            Utils.matToBitmap(mGray2, image);
+//            imageView2.setImageBitmap(image);
+//        }
+        if (img==null) {
+            Log.i(TAG,"Sem Matches para mostrar");
 
-        if (!pathFlag && mGray2.cols() > 0) {
-            Bitmap image = Bitmap.createBitmap(mGray2.cols(), mGray2.rows(), Bitmap.Config.RGB_565);
-            Utils.matToBitmap(mGray2, image);
-            imageView2.setImageBitmap(image);
+        } else {
+
+            imageView.setImageBitmap(img);
+            //contFrames =0;
+
+
         }
-        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
-    contFrames =0;
     }
 
 
@@ -263,23 +272,55 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
+//
+//        Log.i(TAG,"onTouch event");
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+//        String currentDateandTime = sdf.format(new Date());
+//
+//        String fileName =
+//
+//                defaultPicturesSaveFolder + "/sample_" + currentDateandTime + ".jpg";
+//
+//
+//        mOpenCvCameraView.takePicture(fileName);
+//        if(path1 != null && path2 !=null)processORB();
+//        if (pathFlag) path1 = fileName; else path2 = fileName;
+//        pathFlag = !pathFlag;
+//        Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
+//
+        int cont = 1;
 
-        Log.i(TAG,"onTouch event");
+        while (true){
+            Log.e(TAG,"Loop do while " + cont);
+            path1 = defaultPicturesSaveFolder + "/img" + Integer.toString(cont) + ".jpg";
+            path2 = defaultPicturesSaveFolder + "/img" + Integer.toString(cont+1) + ".jpg";
+            File file1 = new File(path1);
+            File file2 = new File(path2);
+            if (!file1.exists() || !file2.exists())break;
+            processORB();
+            FileOutputStream fos = null;
+            if (img!=null) {
+                try {
+                    fos = new FileOutputStream(defaultPicturesSaveFolder + "/resultImg" + Integer.toString(cont) + "_" + Integer.toString(cont + 1) + ".png");
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        String currentDateandTime = sdf.format(new Date());
+                    img.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-        String fileName =
-
-                defaultPicturesSaveFolder + "/sample_" + currentDateandTime + ".jpg";
-
-
-        mOpenCvCameraView.takePicture(fileName);
-        if(path1 != null && path2 !=null)processORB();
-        if (pathFlag) path1 = fileName; else path2 = fileName;
-        pathFlag = !pathFlag;
-        Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
-
+                } catch (java.io.IOException e) {
+                    Log.e("PictureDemo", "Exception in photoCallback", e);
+                } finally {
+                    try {
+                        if (fos != null) {
+                            fos.flush();
+                            fos.close();
+                        }
+                    } catch (java.io.IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            cont++;
+        }
 
         return false;
     }
