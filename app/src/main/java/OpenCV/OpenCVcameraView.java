@@ -17,6 +17,7 @@ public class OpenCVcameraView extends JavaCameraView implements PictureCallback 
 
    private static final String TAG = "OpenCVcameraView";
     private String mPictureFileName;
+    private byte[] mPicture;
 
     public OpenCVcameraView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,23 +68,25 @@ public class OpenCVcameraView extends JavaCameraView implements PictureCallback 
         mCamera.takePicture(null, null, this);
     }
 
+
+
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
         Log.i(TAG, "Saving a bitmap to file");
         // The camera preview was automatically stopped. Start it again.
         mCamera.startPreview();
         mCamera.setPreviewCallback(this);
-
+        mPicture = data;
         // Write the image in a file (in jpeg format)
-        try {
-            FileOutputStream fos = new FileOutputStream(mPictureFileName);
-
-            fos.write(data);
-            fos.close();
-
-        } catch (java.io.IOException e) {
-            Log.e("PictureDemo", "Exception in photoCallback", e);
-        }
+//        try {
+//            FileOutputStream fos = new FileOutputStream(mPictureFileName);
+//
+//            fos.write(data);
+//            fos.close();
+//
+//        } catch (java.io.IOException e) {
+//            Log.e("PictureDemo", "Exception in photoCallback", e);
+//        }
 
     }
 }

@@ -137,17 +137,15 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
 
-    private void processORB(){
-
-
+    private synchronized void processORB(){
+        Log.i(TAG,"Start of processOrb : " +  Long.toString(System.currentTimeMillis()));
+        long time = System.nanoTime();
         //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
-        //img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
-        img = FeatureDetectorAlgorithms.ORB(path1   , path2);
-        //}
-//=======
-//             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
+
+        //img = FeatureDetectorAlgorithms.ORB(path1   , path2);
+             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
 //        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
-//>>>>>>> bd2d8ed33eee3a83a68eb947e6075669a861038e
+
         if (pathFlag && mGray.cols() > 0) {
             Bitmap image = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(mGray, image);
@@ -161,6 +159,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         }
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
     contFrames =0;
+        Log.i(TAG,"End of process Orb : " +  Long.toString(System.currentTimeMillis()));
+        Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
+
     }
 
 
@@ -294,55 +295,64 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     @Override
-    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    public synchronized Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
-
+        Log.i(TAG,"Start of onCameraFrame : " +  Long.toString(System.currentTimeMillis()));
+        long time2 = System.nanoTime();
         mRgba = inputFrame.rgba();
-//        Mat gray = inputFrame.gray();
-//
-//        Log.i(TAG, "framCont : " + contFrames);
-//
-//
-//           if (contFrames == FPS){
-//               if (mGray.cols() == 0 && mGray.rows() == 0){
-//                   mGray = inputFrame.gray();
-//                   Log.i(TAG, "Frame = mgray1");
-//                   contFrames = 0;
-//               }
-//               else {
-//
-//                   if (mGray2.cols() == 0 && mGray2.rows() == 0){
-//                       mGray2 = gray;
-//                       contFrames = 0;
-//                       Log.i(TAG, "frame = mgray2");
-//                   }else{
-//                   if (pathFlag)  {
-//                       mGray = gray;
-//                       Log.i(TAG, "Frame = mgray1");
-//                   }else {
-//                       Log.i(TAG, "Frame = mgray2");
-//                       mGray2 = gray;
-//                   }
-//                   }
-//
-//                   Log.i(TAG,"Mgray and MGray2 " + (mGray!=null) + (mGray2!=null));
-//                   Log.i(TAG,"Mgray and MGray2 " + mGray.rows() + " " + mGray.cols());
-//                   Log.i(TAG, "Mgray and MGray2 " + mGray2.rows() + " " + mGray2.cols());
-//                   pathFlag = !pathFlag;
-//                   runOnUiThread(new Runnable() {
-//                       @Override
-//                       public void run() {
-//
-//                           processORB();
-//
-//
-//                       }
-//
-//                   });
-//               }
-//        }
-//
-//        contFrames++;
+
+
+        Log.i(TAG, "framCont : " + contFrames);
+
+
+           if (contFrames == FrameSkip){
+            Log.i(TAG,"Start of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
+            long time = System.nanoTime();
+
+               Mat gray = inputFrame.gray();
+               if (mGray.cols() == 0 && mGray.rows() == 0){
+                   mGray = inputFrame.gray();
+                   Log.i(TAG, "Frame = mgray1");
+                   contFrames = 0;
+               }
+               else {
+
+                   if (mGray2.cols() == 0 && mGray2.rows() == 0){
+                       mGray2 = gray;
+                       contFrames = 0;
+                   //    Log.i(TAG, "frame = mgray2");
+                   }else{
+                   if (pathFlag)  {
+                       mGray = gray;
+                   //    Log.i(TAG, "Frame = mgray1");
+                   }else {
+                    //   Log.i(TAG, "Frame = mgray2");
+                       mGray2 = gray;
+                   }
+                   }
+
+                   Log.i(TAG,"Mgray and MGray2 " + (mGray!=null) + (mGray2!=null));
+                   Log.i(TAG,"Mgray and MGray2 " + mGray.rows() + " " + mGray.cols());
+                   Log.i(TAG, "Mgray and MGray2 " + mGray2.rows() + " " + mGray2.cols());
+                   pathFlag = !pathFlag;
+                   runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+
+                           processORB();
+
+
+                       }
+
+                   });
+               }
+               Log.i(TAG,"End of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
+               Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
+        }
+
+        contFrames++;
+        Log.i(TAG,"End of OnCameraFrame : " +  Long.toString(System.currentTimeMillis()));
+        Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time2));
         return mRgba;
 //=======
 //
