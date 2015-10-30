@@ -73,7 +73,6 @@ public class FeatureDetectorAlgorithms {
 //        return imageMatched;
 //    }
 
-
     public static Bitmap ORB2(Mat firstPath, Mat secondPath){
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);;
@@ -197,7 +196,7 @@ public class FeatureDetectorAlgorithms {
 
         for (int i = 0; i < filteredKeypointsList.size(); i++){
             double dist = filteredMatchesList.get(i).distance;
-            if (dist < minDist) {
+            if (dist < minDist && dist > 0) {
                 minDist = dist;
             }
             if (dist > maxDist){
@@ -215,6 +214,69 @@ public class FeatureDetectorAlgorithms {
         }
 
         return goodMatches;
+    }
+
+    private static void homographyFiltering(LinkedList<KeyPoint> keypointsObject,
+                                                          LinkedList<KeyPoint> keypointsScene, LinkedList<DMatch> goodMatches,
+                                                          List<KeyPoint> filteredMatchesObj, List<KeyPoint> filteredMatchesScene){
+        LinkedList<Point> obj_pointsList = new LinkedList<Point>();
+        LinkedList<Point> scene_pointsList = new LinkedList<Point>();
+
+        for (int i = 0; i < goodMatches.size(); i++){
+            try {
+                obj_pointsList.addLast(keypointsObject.get(goodMatches.get(i).queryIdx).pt);
+                scene_pointsList.addLast(keypointsScene.get(goodMatches.get(i).trainIdx).pt);
+            }catch (IndexOutOfBoundsException e){
+                //Log.e(TAG,"Out of bounds on the goodmatches");
+            }
+        }
+
+        //Now is needed to convert to matOfPoint2f so we can use the finHomography function
+        MatOfPoint2f obj = new MatOfPoint2f();
+        obj.fromList(obj_pointsList);
+        MatOfPoint2f scene = new MatOfPoint2f();
+        scene.fromList(scene_pointsList);
+        Mat inliners = new Mat();
+
+        if (obj.dims() == 0 || scene.dims() == 0) {
+            Log.e(TAG,"Keypoints dimentions are 0");
+            return;
+        }
+
+        try {
+            Mat homography = Calib3d.findHomography(obj,scene,Calib3d.RANSAC,1,inliners);
+        }catch (CvException e){
+            e.printStackTrace();
+            return;
+        }
+
+        //Taking out the outliners, using the Mat was modified by the findHomography function
+        //We need to create MatOfKeypoints and then take back the list because isnt implemented in OpenCV the remove function for lists of DMatch
+        MatOfKeyPoint objKeypoints = new MatOfKeyPoint();
+        objKeypoints.fromList(keypointsObject);
+
+        MatOfKeyPoint sceneKeypoints = new MatOfKeyPoint();
+        sceneKeypoints.fromList(keypointsScene);
+
+        filteredMatchesObj = objKeypoints.toList();
+        filteredMatchesScene = sceneKeypoints.toList();
+        for (int i = 0; i < inliners.rows(); i++){
+            //StringBuilder sb = new StringBuilder("");
+            for (int j = 0; j < inliners.cols(); j++){
+                double[] indexes = inliners.get(i,j);
+                for (int k = 0; k < indexes.length; k++){
+                    //sb.append(indexes[k] + " ");
+                    if (indexes[k] <= 0){
+                        filteredMatchesObj.remove(objKeypoints.get(i,j));
+                        filteredMatchesScene.remove(sceneKeypoints.get(i,j));
+                    }
+                }
+                //Log.i(TAG,"inliners(" + i + "," + j + ") -> " + sb.toString());
+//                Log.i(TAG,"inliners size = " + inliners.size());
+//                Log.i(TAG,"obj size = " + obj.size());
+//                Log.i(TAG,"scene size = " + scene.size());
+            }
+        }
     }
 
     public static Bitmap ORB(Mat firstPath, Mat secondPath){
@@ -274,11 +336,18 @@ public class FeatureDetectorAlgorithms {
         //now find the homography matrix, we need 2 lists, in this case
         //will be form both images, but when used to recognize patterns, one is the train image
         //and the other is the scene to be recognized
+
         List<KeyPoint> obj_keypont = filteredKeypointsList;//keypoints_object.toList();
         List<KeyPoint> scene_keypont = filteredKeypointsList2 ;//keypoints_scene.toList();
 
+        //homographyFiltering(filteredKeypointsList,filteredKeypointsList2,goodMatches,obj_keypont,scene_keypont);
+
+        //-----
+
+
         LinkedList<Point> obj_pointsList = new LinkedList<Point>();
         LinkedList<Point> scene_pointsList = new LinkedList<Point>();
+
 
         for (int i = 0; i < goodMatches.size(); i++){
            try {
@@ -331,14 +400,15 @@ public class FeatureDetectorAlgorithms {
             }
         }
 
+        //Mat outputImg = new Mat();
+
         //output image
         MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
-        keypoints1.fromList(listOfGoodKeypointsObj);
+        keypoints1.fromList(obj_keypont);
         MatOfKeyPoint keypoints2 = new MatOfKeyPoint();
-        keypoints2.fromList(listOfGoodKeypointsScene);
+        keypoints2.fromList(scene_keypont);
 
-        Features2d.drawMatches(firstPath, keypoints1, secondPath, keypoints2, goodMatchesMat, outputImg, GREEN, RED, new MatOfByte(), Features2d.NOT_DRAW_SINGLE_POINTS);
-
+        Features2d.drawMatches(firstPath, keypoints_object, secondPath, keypoints_scene, goodMatchesMat, outputImg, GREEN, RED, new MatOfByte(), Features2d.NOT_DRAW_SINGLE_POINTS);
         Bitmap imageMatched = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(), Bitmap.Config.RGB_565);//need to save bitmap
         Utils.matToBitmap(outputImg, imageMatched);
         return imageMatched;
