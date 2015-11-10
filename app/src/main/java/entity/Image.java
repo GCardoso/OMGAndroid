@@ -23,7 +23,7 @@ public class Image {
         this.accelerometerY = accelerometerY;
         this.accelerometerZ = accelerometerZ;
     }
-// construtor sem ID para uso no banco
+// construtor sem ID_IMAGE para uso no banco
     public Image(String name, double latitude, double longitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
         this.name = name;
         this.latitude = latitude;

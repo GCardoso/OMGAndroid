@@ -90,6 +90,7 @@ public class FeatureDetectorAlgorithms {
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
 
+
         detector.detect(img_object, keypoints_object);
         descriptor.compute(img_object, keypoints_object, descriptors1);
 
