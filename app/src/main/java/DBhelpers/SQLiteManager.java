@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.opencv.features2d.DMatch;
 import org.opencv.features2d.KeyPoint;
 
+import entity.DMatchEntity;
 import entity.Image;
 import entity.KeypointEntity;
 
@@ -33,8 +35,19 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public static final String ANGLE = "angle";
     public static final String OCTAVE = "octave";
     public static final String SIZE = "size";
-    public static final String RESPONSE = "size";
+    public static final String RESPONSE = "response";
     public static final String KEYPOINT_CLASS_ID = "class_id";
+
+    //DMatchEntity
+    public static final String ID_DMATCH = "id";
+    public static final String ID_QUERY = "id_query";
+    public static final String ID_TRAIN = "id_train";
+    public static final String IDX_QUERY = "idx_query";
+    public static final String IDX_TRAIN = "idx_train";
+
+    public static final String IDX_IMAGE = "idx_image";
+    public static final String DISTANCE = "distance";
+
 
 
 
@@ -43,6 +56,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "photoGuideDB.db";
     private static final String TABLE_IMAGES = "images";
     private static final String TABLE_KEYPOINTS = "keypoints";
+    private static final String TABLE_DMATCHES = "dmatches";
 
 
     public SQLiteManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -76,19 +90,32 @@ public class SQLiteManager extends SQLiteOpenHelper {
                         RESPONSE + " FLOAT," +
                         OCTAVE + " INTEGER," +
                         KEYPOINT_CLASS_ID + " INTEGER" + ")";
+        String CREATE_DMATCHES_TABLE =
+                "CREATE TABLE " +
+                        TABLE_DMATCHES + "(" +
+                        ID_DMATCH + " INTEGER PRIMARY KEY," +
+                        ID_QUERY + " INTEGER FOREIGN KEY," +
+                        ID_TRAIN + " INTEGER FOREIGN KEY," +
+                        IDX_QUERY + " INTEGER," +
+                        IDX_TRAIN + " INTEGER," +
+
+                        IDX_IMAGE + " INTEGER," +
+                        DISTANCE + " FLOAT"  + ")";
         db.execSQL(CREATE_IMAGE_TABLE);
         db.execSQL(CREATE_KEYPOINT_TABLE);
+        db.execSQL(CREATE_DMATCHES_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " +  TABLE_IMAGES);
         db.execSQL("DROP TABLE IF EXISTS " +  TABLE_KEYPOINTS);
+        db.execSQL("DROP TABLE IF EXISTS " +  TABLE_DMATCHES);
         onCreate(db);
     }
 
 //ADD HANDLER METHODS
-    public void addImage(Image image) {
+    public long addImage(Image image) {
 
         ContentValues values = new ContentValues();
         values.put(NOME, image.getName());
@@ -99,9 +126,47 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(ACCELEROMETERZ, image.getAccelerometerZ());
 
         SQLiteDatabase db = this.getWritableDatabase();
-
-        db.insert(TABLE_IMAGES, null, values);
+        long retorno = -1;
+        retorno = db.insert(TABLE_IMAGES, null, values);
         db.close();
+        return retorno;
+    }
+
+    public long addKeypoint(Integer fid,KeyPoint kp) {
+
+        ContentValues values = new ContentValues();
+        values.put(ID_IMAGE_KEYPOINT, fid);
+        values.put(COORDX, kp.pt.x);
+        values.put(COORDX, kp.pt.y);
+        values.put(SIZE, kp.size);
+        values.put(ANGLE, kp.angle);
+        values.put(RESPONSE, kp.response);
+        values.put(OCTAVE, kp.octave);
+        values.put(KEYPOINT_CLASS_ID, kp.class_id);
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        long retorno = -1;
+        retorno = db.insert(TABLE_KEYPOINTS, null, values);
+        db.close();
+        return retorno;
+    }
+
+    public long addDMatch( Integer queryid,Integer trainid, DMatch dm) {
+
+        ContentValues values = new ContentValues();
+        values.put(ID_TRAIN, trainid);
+        values.put(ID_QUERY, queryid);
+        values.put(IDX_TRAIN, dm.trainIdx);
+        values.put(IDX_QUERY, dm.queryIdx);
+        values.put(IDX_IMAGE, dm.imgIdx);
+        values.put(DISTANCE, dm.distance);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        long retorno = -1;
+        retorno = db.insert(TABLE_DMATCHES, null, values);
+        db.close();
+        return retorno;
     }
 
 //QUERY HANDLER METHODS
@@ -162,7 +227,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
     public KeypointEntity findKeypointbyID(String id) {
 
-        String query = "Select * FROM " + ID_KEYPOINT + " WHERE " + ID_KEYPOINT + " =  \"" + id + "\"";
+        String query = "Select * FROM " + TABLE_KEYPOINTS + " WHERE " + ID_KEYPOINT + " =  \"" + id + "\"";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -194,7 +259,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     public KeypointEntity findKeypointbyImage(String id_image) {
 
-        String query = "Select * FROM " + ID_IMAGE_KEYPOINT + " WHERE " + ID_IMAGE_KEYPOINT + " =  \"" + id_image + "\"";
+        String query = "Select * FROM " + TABLE_KEYPOINTS + " WHERE " + ID_IMAGE_KEYPOINT + " =  \"" + id_image + "\"";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -222,6 +287,35 @@ public class SQLiteManager extends SQLiteOpenHelper {
         }
         db.close();
         return kpe;
+    }
+
+    public DMatchEntity findDMatchbyID(String id_image) {
+
+        String query = "Select * FROM " + TABLE_DMATCHES + " WHERE " + ID_DMATCH + " =  \"" + id_image + "\"";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        DMatchEntity dme = new DMatchEntity();
+        DMatch dm;
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            dm = new DMatch(Integer.parseInt(cursor.getString(3)), // X
+                    Integer.parseInt(cursor.getString(4)), // Y
+                    Integer.parseInt(cursor.getString(5)), // ANGLE
+                    Float.parseFloat(cursor.getString(6))); // RESPONSE
+
+            dme.setId(Integer.parseInt(cursor.getString(0)));
+            dme.setQuery_id(Integer.parseInt(cursor.getString(1)));
+            dme.setTrain_id(Integer.parseInt(cursor.getString(2)));
+                    cursor.close();
+        } else {
+            dme = null;
+        }
+        db.close();
+        return dme;
     }
 
  //DELETE HANDLER METHODS
