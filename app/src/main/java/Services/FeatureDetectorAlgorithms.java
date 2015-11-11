@@ -1,5 +1,6 @@
 package Services;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -25,6 +26,9 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import DBhelpers.SQLiteManager;
+import entity.Image;
 
 /**
  * Created by guilhermecardoso on 8/10/15.
@@ -75,8 +79,10 @@ public class FeatureDetectorAlgorithms {
 //        return imageMatched;
 //    }
 
-    public static Bitmap ORB(Mat firstPath, Mat secondPath){
+    public static Bitmap ORB(Mat firstPath, Mat secondPath,Context context){
     //public static Bitmap ORB(String firstPath, String secondPath) {
+
+        SQLiteManager sqlm = new SQLiteManager(context);
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);
         ;
@@ -86,7 +92,8 @@ public class FeatureDetectorAlgorithms {
 
         Mat img_object = //Highgui.imread
                 (firstPath);
-
+        Image image1 = new Image();
+        long img1_ID = sqlm.addImage(image1);
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
 
@@ -97,6 +104,8 @@ public class FeatureDetectorAlgorithms {
         //second image
         Mat img_scene = //Highgui.imread
                 (secondPath);
+        Image image2 = new Image();
+        long img2_ID = sqlm.addImage(image2);
 
         Mat descriptors2 = new Mat();
         MatOfKeyPoint keypoints_scene = new MatOfKeyPoint();
@@ -239,6 +248,20 @@ public class FeatureDetectorAlgorithms {
 //                Log.i(TAG,"obj size = " + obj.size());
 //                Log.i(TAG,"scene size = " + scene.size());
             }
+        }
+
+        long[] objkeypoints_ID = new long[listOfGoodKeypointsObj.size()];
+        long[] scnkeypoints_ID = new long[listOfGoodKeypointsScene.size()];
+
+        for (int i = 0; i < listOfGoodKeypointsObj.size(); i++) {
+            objkeypoints_ID[i] =  sqlm.addKeypoint((int)img1_ID,listOfGoodKeypointsObj.get(i));
+        }
+        for (int i = 0; i < listOfGoodKeypointsScene.size(); i++) {
+            scnkeypoints_ID[i] = sqlm.addKeypoint((int) img2_ID, listOfGoodKeypointsScene.get(i));
+        }
+
+        for (int i = 0; i < goodMatches.size(); i++) {
+            long id = sqlm.addDMatch((int)objkeypoints_ID[i],(int)scnkeypoints_ID[i],goodMatches.get(i));
         }
 
         //output image

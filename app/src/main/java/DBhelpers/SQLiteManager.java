@@ -59,8 +59,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
     private static final String TABLE_DMATCHES = "dmatches";
 
 
-    public SQLiteManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory,DATABASE_VERSION);
+    public SQLiteManager(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
