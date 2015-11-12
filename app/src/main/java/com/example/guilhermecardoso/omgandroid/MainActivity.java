@@ -2,6 +2,7 @@ package com.example.guilhermecardoso.omgandroid;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
@@ -31,7 +32,9 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -115,7 +118,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
         tableHelper = new TableHelper(this);
         //mainTable = (TableLayout) findViewById(R.id.main_table);
-        dbManager = new SQLiteManager(this, null, null, 1);
+
         //tableHelper.createTable(mainTable);
         /*preview = (SurfaceView) findViewById(R.id.preview);
         previewHolder = preview.getHolder();
@@ -144,7 +147,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
 
         //img = FeatureDetectorAlgorithms.ORB(path1   , path2);
-             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
+             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2,this);
 //        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
 //<<<<<<< HEAD
 
@@ -176,7 +179,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
 //>>>>>>> 20824243465bad79426117e030ec09e2734207d4
 
-        }
+
 
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
     contFrames =0;
@@ -246,7 +249,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     public void lookupImage(View view) {
-        SQLiteManager sqLiteManager = new SQLiteManager(this, null, null, 1);
+        SQLiteManager sqLiteManager = new SQLiteManager(this);
 
         //modificar essa parte com as views que v�o fornecer os parametros para busca
         //Image image =
@@ -280,6 +283,40 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
 
+        File f = getDatabasePath("photoGuideDB.db");
+        FileInputStream fis=null;
+        FileOutputStream  fos=null;
+
+        try
+        {
+            fis=new FileInputStream(f);
+            fos=new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + "/db_dump.db"));
+            while(true)
+            {
+                int i=fis.read();
+                if(i!=-1)
+                {fos.write(i);}
+                else
+                {break;}
+            }
+            fos.flush();
+            Toast.makeText(this, "DB dump OK", Toast.LENGTH_LONG).show();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this, "DB dump ERROR", Toast.LENGTH_LONG).show();
+        }
+        finally
+        {
+            try
+            {
+                fos.close();
+                fis.close();
+            }
+            catch(IOException ioe)
+            {}
+        }
     }
 
     @SuppressLint("SimpleDateFormat")

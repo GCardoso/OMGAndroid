@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import org.opencv.features2d.DMatch;
 import org.opencv.features2d.KeyPoint;
 
+import java.io.File;
+
 import entity.DMatchEntity;
 import entity.Image;
 import entity.KeypointEntity;
@@ -82,25 +84,27 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 "CREATE TABLE " +
                         TABLE_KEYPOINTS + "(" +
                         ID_KEYPOINT + " INTEGER PRIMARY KEY," +
-                        ID_IMAGE_KEYPOINT + " INTEGER FOREIGN KEY," +
+                        ID_IMAGE_KEYPOINT + " INTEGER," +
                         COORDX + " DOUBLE," +
                         COORDY + " DOUBLE," +
                         SIZE + " FLOAT," +
                         ANGLE + " FLOAT," +
                         RESPONSE + " FLOAT," +
                         OCTAVE + " INTEGER," +
-                        KEYPOINT_CLASS_ID + " INTEGER" + ")";
+                        KEYPOINT_CLASS_ID + " INTEGER," +
+                        "FOREIGN KEY(" + ID_IMAGE_KEYPOINT + ") REFERENCES " + TABLE_IMAGES + "("+ID_IMAGE+")" + ")";
         String CREATE_DMATCHES_TABLE =
                 "CREATE TABLE " +
                         TABLE_DMATCHES + "(" +
                         ID_DMATCH + " INTEGER PRIMARY KEY," +
-                        ID_QUERY + " INTEGER FOREIGN KEY," +
-                        ID_TRAIN + " INTEGER FOREIGN KEY," +
+                        ID_QUERY + " INTEGER," +
+                        ID_TRAIN + " INTEGER," +
                         IDX_QUERY + " INTEGER," +
                         IDX_TRAIN + " INTEGER," +
-
                         IDX_IMAGE + " INTEGER," +
-                        DISTANCE + " FLOAT"  + ")";
+                        DISTANCE + " FLOAT,"  +
+                        "FOREIGN KEY(" + ID_QUERY + ") REFERENCES " + TABLE_KEYPOINTS + "("+ID_KEYPOINT+")," +
+                        "FOREIGN KEY(" + ID_TRAIN + ") REFERENCES " + TABLE_KEYPOINTS + "("+ID_KEYPOINT+")" + ")";
         db.execSQL(CREATE_IMAGE_TABLE);
         db.execSQL(CREATE_KEYPOINT_TABLE);
         db.execSQL(CREATE_DMATCHES_TABLE);
@@ -113,7 +117,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " +  TABLE_DMATCHES);
         onCreate(db);
     }
-
 //ADD HANDLER METHODS
     public long addImage(Image image) {
 
@@ -137,7 +140,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(ID_IMAGE_KEYPOINT, fid);
         values.put(COORDX, kp.pt.x);
-        values.put(COORDX, kp.pt.y);
+        values.put(COORDY, kp.pt.y);
         values.put(SIZE, kp.size);
         values.put(ANGLE, kp.angle);
         values.put(RESPONSE, kp.response);

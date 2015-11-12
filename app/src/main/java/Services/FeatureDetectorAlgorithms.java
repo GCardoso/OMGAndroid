@@ -93,7 +93,7 @@ public class FeatureDetectorAlgorithms {
         Mat img_object = //Highgui.imread
                 (firstPath);
         Image image1 = new Image();
-        long img1_ID = sqlm.addImage(image1);
+
         Mat descriptors1 = new Mat();
         MatOfKeyPoint keypoints_object = new MatOfKeyPoint();
 
@@ -105,7 +105,7 @@ public class FeatureDetectorAlgorithms {
         Mat img_scene = //Highgui.imread
                 (secondPath);
         Image image2 = new Image();
-        long img2_ID = sqlm.addImage(image2);
+
 
         Mat descriptors2 = new Mat();
         MatOfKeyPoint keypoints_scene = new MatOfKeyPoint();
@@ -252,6 +252,8 @@ public class FeatureDetectorAlgorithms {
 
         long[] objkeypoints_ID = new long[listOfGoodKeypointsObj.size()];
         long[] scnkeypoints_ID = new long[listOfGoodKeypointsScene.size()];
+        long img1_ID = sqlm.addImage(image1);
+        long img2_ID = sqlm.addImage(image2);
 
         for (int i = 0; i < listOfGoodKeypointsObj.size(); i++) {
             objkeypoints_ID[i] =  sqlm.addKeypoint((int)img1_ID,listOfGoodKeypointsObj.get(i));
