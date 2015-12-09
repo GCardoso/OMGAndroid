@@ -249,23 +249,29 @@ public class FeatureDetectorAlgorithms {
 //                Log.i(TAG,"scene size = " + scene.size());
             }
         }
-
-        long[] objkeypoints_ID = new long[listOfGoodKeypointsObj.size()];
-        long[] scnkeypoints_ID = new long[listOfGoodKeypointsScene.size()];
+        Integer[] objkeypoints_ID = new Integer[listOfGoodKeypointsObj.size()];
+        Integer[] scnkeypoints_ID = new Integer[listOfGoodKeypointsScene.size()];
         long img1_ID = sqlm.addImage(image1);
         long img2_ID = sqlm.addImage(image2);
 
-        for (int i = 0; i < listOfGoodKeypointsObj.size(); i++) {
-            objkeypoints_ID[i] =  sqlm.addKeypoint((int)img1_ID,listOfGoodKeypointsObj.get(i));
-        }
-        for (int i = 0; i < listOfGoodKeypointsScene.size(); i++) {
-            scnkeypoints_ID[i] = sqlm.addKeypoint((int) img2_ID, listOfGoodKeypointsScene.get(i));
-        }
+     //   for (int i = 0; i < listOfGoodKeypointsObj.size(); i++) {
+     //       objkeypoints_ID[i] =  sqlm.addKeypoint((int)img1_ID,listOfGoodKeypointsObj.get(i));
+      //  }
+      //  for (int i = 0; i < listOfGoodKeypointsScene.size(); i++) {
+      //      scnkeypoints_ID[i] = sqlm.addKeypoint((int) img2_ID, listOfGoodKeypointsScene.get(i));
+       // }
 
-        for (int i = 0; i < goodMatches.size(); i++) {
-            long id = sqlm.addDMatch((int)objkeypoints_ID[i],(int)scnkeypoints_ID[i],goodMatches.get(i));
-        }
+      //  for (int i = 0; i < goodMatches.size(); i++) {
+   //         long id = sqlm.addDMatch((int)objkeypoints_ID[i],(int)scnkeypoints_ID[i],goodMatches.get(i));
+     //   }
 
+        objkeypoints_ID = sqlm.addKeypointMany((int)img1_ID,listOfGoodKeypointsObj);
+        scnkeypoints_ID = sqlm.addKeypointMany((int)img2_ID,listOfGoodKeypointsScene);
+        sqlm.addDMatchMany(objkeypoints_ID,scnkeypoints_ID,goodMatches);
+
+
+
+        Mat FMat = Calib3d.findFundamentalMat(obj,scene);
         //output image
         MatOfKeyPoint keypoints1 = new MatOfKeyPoint();
         keypoints1.fromList(listOfGoodKeypointsObj);

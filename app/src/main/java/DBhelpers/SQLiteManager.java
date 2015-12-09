@@ -10,6 +10,8 @@ import org.opencv.features2d.DMatch;
 import org.opencv.features2d.KeyPoint;
 
 import java.io.File;
+import java.security.Key;
+import java.util.List;
 
 import entity.DMatchEntity;
 import entity.Image;
@@ -68,6 +70,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        //db.execSQL("PRAGMA  main.synchronous=off;");
 
         String CREATE_IMAGE_TABLE =
                 "CREATE TABLE " +
@@ -147,7 +150,6 @@ public class SQLiteManager extends SQLiteOpenHelper {
         values.put(OCTAVE, kp.octave);
         values.put(KEYPOINT_CLASS_ID, kp.class_id);
 
-
         SQLiteDatabase db = this.getWritableDatabase();
         long retorno = -1;
         retorno = db.insert(TABLE_KEYPOINTS, null, values);
@@ -155,6 +157,60 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return retorno;
     }
 
+    public Integer[] addKeypointMany(Integer fid,List<KeyPoint> kp) {
+        Integer[] retorno = new Integer[kp.size()];
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        for (int i = 0; i < kp.size(); i++) {
+
+
+            ContentValues values = new ContentValues();
+            values.put(ID_IMAGE_KEYPOINT, fid);
+            values.put(COORDX, kp.get(i).pt.x);
+            values.put(COORDY, kp.get(i).pt.y);
+            values.put(SIZE, kp.get(i).size);
+            values.put(ANGLE, kp.get(i).angle);
+            values.put(RESPONSE, kp.get(i).response);
+            values.put(OCTAVE, kp.get(i).octave);
+            values.put(KEYPOINT_CLASS_ID, kp.get(i).class_id);
+
+
+            long temp;
+            temp = db.insert(TABLE_KEYPOINTS, null, values);
+            retorno[i] = (int)temp;
+            if (temp == -1) break;
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+        return retorno;
+    }
+
+    public Integer[] addDMatchMany( Integer[] queryid,Integer[] trainid,List<DMatch> dm) {
+
+        Integer[] retorno = new Integer[dm.size()];
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        for (int i = 0; i < dm.size(); i++) {
+
+            ContentValues values = new ContentValues();
+            values.put(ID_TRAIN, trainid[i]);
+            values.put(ID_QUERY, queryid[i]);
+            values.put(IDX_TRAIN, dm.get(i).trainIdx);
+            values.put(IDX_QUERY, dm.get(i).queryIdx);
+            values.put(IDX_IMAGE, dm.get(i).imgIdx);
+            values.put(DISTANCE, dm.get(i).distance);
+
+
+            long temp = db.insert(TABLE_DMATCHES, null, values);
+            retorno[i] = (int)temp;
+            if (temp == -1) break;
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+        return retorno;
+    }
     public long addDMatch( Integer queryid,Integer trainid, DMatch dm) {
 
         ContentValues values = new ContentValues();

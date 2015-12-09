@@ -388,8 +388,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @Override
     public synchronized Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
-        Log.i(TAG,"Start of onCameraFrame : " +  Long.toString(System.currentTimeMillis()));
-        long time2 = System.nanoTime();
+    //    Log.i(TAG,"Start of onCameraFrame : " +  Long.toString(System.currentTimeMillis()));
+    //    long time2 = System.nanoTime();
         mRgba = inputFrame.rgba();
 
 
@@ -397,13 +397,13 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
 
            if (contFrames == FrameSkip){
-            Log.i(TAG,"Start of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
-            long time = System.nanoTime();
+            //Log.i(TAG,"Start of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
+            //long time = System.nanoTime();
 
                Mat gray = inputFrame.gray();
                if (mGray.cols() == 0 && mGray.rows() == 0){
                    mGray = inputFrame.gray();
-                   Log.i(TAG, "Frame = mgray1");
+                 //  Log.i(TAG, "Frame = mgray1");
                    contFrames = 0;
                }
                else {
@@ -422,9 +422,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
                    }
                    }
 
-                   Log.i(TAG,"Mgray and MGray2 " + (mGray!=null) + (mGray2!=null));
-                   Log.i(TAG,"Mgray and MGray2 " + mGray.rows() + " " + mGray.cols());
-                   Log.i(TAG, "Mgray and MGray2 " + mGray2.rows() + " " + mGray2.cols());
+                  // Log.i(TAG,"Mgray and MGray2 " + (mGray!=null) + (mGray2!=null));
+                 //  Log.i(TAG,"Mgray and MGray2 " + mGray.rows() + " " + mGray.cols());
+                 //  Log.i(TAG, "Mgray and MGray2 " + mGray2.rows() + " " + mGray2.cols());
                    pathFlag = !pathFlag;
                    runOnUiThread(new Runnable() {
                        @Override
@@ -437,13 +437,13 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
                    });
                }
-               Log.i(TAG,"End of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
-               Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
+              // Log.i(TAG,"End of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
+              // Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
         }
 
         contFrames++;
-        Log.i(TAG,"End of OnCameraFrame : " +  Long.toString(System.currentTimeMillis()));
-        Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time2));
+      //  Log.i(TAG,"End of OnCameraFrame : " +  Long.toString(System.currentTimeMillis()));
+      //  Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time2));
         return mRgba;
 //=======
 //
