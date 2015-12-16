@@ -2,39 +2,39 @@
 <items version="2" >
 
     <item
-        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/jars/classes.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-9ec5c10fba325c0b1871636e587e13d0e47108af.jar" />
-    </item>
-    <item
-        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/classes.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-23c661be6d7efb94ce47034235d034c958460b58.jar" />
-    </item>
-    <item
-        jar="/Users/guilhermecardoso/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/support-annotations-22.2.0-29b8a57b4dce013c65b7a9d4ed233456a2ee03f4.jar" />
-    </item>
-    <item
-        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars/libs/internal_impl-22.2.0.jar"
+        jar="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\libs\internal_impl-22.2.0.jar"
         jumboMode="false"
         revision="22.0.1"
         sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/internal_impl-22.2.0-be19e54786a089977ba535e10c3d18e869fbb95e.jar" />
+        <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.0-6c25e7637e9964e24e6b4ef67963a5a68a317801.jar" />
     </item>
     <item
-        jar="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/exploded-aar/PhotoGuide/openCVLibrary249/unspecified/jars/classes.jar"
+        jar="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\exploded-aar\PhotoGuide\openCVLibrary249\unspecified\jars\classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="99094a908a936699e6a688372501b3d1df90c1c6">
-        <dex dex="/Users/guilhermecardoso/PhotoGuide/app/build/intermediates/pre-dexed/debug/classes-83895af9e95272844cd61296b3509aaee93dc43b.jar" />
+        sha1="94e69642c5c2c38f56162c3be72af2edeb977135">
+        <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\classes-4cbd389ed6fe1a8bd4273a4512c34ef4ba6b013d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Italo\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.0\support-annotations-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
+        <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.0-4e0273f507b628d439850ee7080266dda03db705.jar" />
+    </item>
+    <item
+        jar="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
+        <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\classes-ded9b05d596eb714b0ed1cb2fd3f4a5b6fbc5c7c.jar" />
+    </item>
+    <item
+        jar="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
+        <dex dex="C:\Users\Italo\Documents\GitHub\PhotoGuide\app\build\intermediates\pre-dexed\debug\classes-64fdf1e33e7e0498be02ebf13dcf2c9eee664eb8.jar" />
     </item>
 
 </items>

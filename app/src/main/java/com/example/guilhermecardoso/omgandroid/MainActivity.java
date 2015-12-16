@@ -2,6 +2,7 @@ package com.example.guilhermecardoso.omgandroid;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
@@ -24,9 +25,16 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+
+import org.opencv.android.Utils;
+import org.opencv.core.CvType;
+
 import org.opencv.core.Mat;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -42,18 +50,22 @@ import Services.ServiceGyroscope;
 
 public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
     public static ImageView imageView;
+    public static ImageView imageView2;
     private ServiceGPSTracker serviceGPS;
     private ServiceGyroscope serviceXYZ;
     private SQLiteManager dbManager;
-	private TableHelper tableHelper;
+    private TableHelper tableHelper;
     private static String TAG = "Main Activity";
-	TableLayout mainTable;
+    TableLayout mainTable;
     private static boolean pathFlag = true;
     private static String path1,path2;
     private static File defaultPicturesSaveFolder;
     private static int contFrames = 0;
+
     private static final int FrameSkip = 10;
+
     private static int contadorLinhas = 0;
+    private static Bitmap img;
 
     //Tutorial3 atributes clean after
 
@@ -65,6 +77,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private SubMenu mResolutionMenu;
 
     public Mat                    mGray;
+
+    public Mat                    mRgba;
+
     public Mat                    mGray2;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -103,7 +118,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
         tableHelper = new TableHelper(this);
         //mainTable = (TableLayout) findViewById(R.id.main_table);
-        dbManager = new SQLiteManager(this, null, null, 1);
+
         //tableHelper.createTable(mainTable);
         /*preview = (SurfaceView) findViewById(R.id.preview);
         previewHolder = preview.getHolder();
@@ -111,7 +126,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
 
         setContentView(R.layout.cameraview);
         this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
-		mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
+        this.imageView2 = (ImageView) this.findViewById(R.id.imageViewPhotoTaken2);
+        mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         //mOpenCvCameraView.setResolution();
@@ -125,11 +141,50 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
 
-    private void processORB(){
+    private synchronized void processORB(){
+        Log.i(TAG,"Start of processOrb : " +  Long.toString(System.currentTimeMillis()));
+        long time = System.nanoTime();
+        //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
 
-             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2);
+        //img = FeatureDetectorAlgorithms.ORB(path1   , path2);
+             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2,this);
+//        if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
+//<<<<<<< HEAD
+
+        if (pathFlag && mGray.cols() > 0) {
+            Bitmap image = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.RGB_565);
+            Utils.matToBitmap(mGray, image);
+            imageView2.setImageBitmap(image);
+        }
+//=======
+
+//        if (pathFlag && mGray.cols() > 0) {
+//            Bitmap image = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.RGB_565);
+//            Utils.matToBitmap(mGray, image);
+//            imageView2.setImageBitmap(image);
+//        }
+//
+//        if (!pathFlag && mGray2.cols() > 0) {
+//            Bitmap image = Bitmap.createBitmap(mGray2.cols(), mGray2.rows(), Bitmap.Config.RGB_565);
+//            Utils.matToBitmap(mGray2, image);
+//            imageView2.setImageBitmap(image);
+//        }
+//        if (img==null) {
+//            Log.i(TAG,"Sem Matches para mostrar");
+
+ //       } else {
+
+//            imageView.setImageBitmap(img);
+            //contFrames =0;
+
+//>>>>>>> 20824243465bad79426117e030ec09e2734207d4
+
+
 
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
+    contFrames =0;
+        Log.i(TAG,"End of process Orb : " +  Long.toString(System.currentTimeMillis()));
+        Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
 
 
     }
@@ -194,7 +249,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     public void lookupImage(View view) {
-        SQLiteManager sqLiteManager = new SQLiteManager(this, null, null, 1);
+        SQLiteManager sqLiteManager = new SQLiteManager(this);
 
         //modificar essa parte com as views que v�o fornecer os parametros para busca
         //Image image =
@@ -210,10 +265,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     protected void onPause() {
-        super.onPause();
+
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
-
+        super.onPause();
 
     }
 
@@ -228,30 +283,97 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
 
+        File f = getDatabasePath("photoGuideDB.db");
+        FileInputStream fis=null;
+        FileOutputStream  fos=null;
+
+        try
+        {
+            fis=new FileInputStream(f);
+            fos=new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + "/db_dump.db"));
+            while(true)
+            {
+                int i=fis.read();
+                if(i!=-1)
+                {fos.write(i);}
+                else
+                {break;}
+            }
+            fos.flush();
+            Toast.makeText(this, "DB dump OK", Toast.LENGTH_LONG).show();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this, "DB dump ERROR", Toast.LENGTH_LONG).show();
+        }
+        finally
+        {
+            try
+            {
+                fos.close();
+                fis.close();
+            }
+            catch(IOException ioe)
+            {}
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        Log.i(TAG,"onTouch event");
+//
+//        Log.i(TAG,"onTouch event");
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+//        String currentDateandTime = sdf.format(new Date());
+//
+//        String fileName =
+//
+//                defaultPicturesSaveFolder + "/sample_" + currentDateandTime + ".jpg";
+//
+//
+//        mOpenCvCameraView.takePicture(fileName);
+//        if(path1 != null && path2 !=null)processORB();
+//        if (pathFlag) path1 = fileName; else path2 = fileName;
+//        pathFlag = !pathFlag;
+//        Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
+//
+        int cont = 1;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        String currentDateandTime = sdf.format(new Date());
+        while (true){
+            Log.e(TAG,"Loop do while " + cont);
+            path1 = defaultPicturesSaveFolder + "/img" + Integer.toString(cont) + ".jpg";
+            path2 = defaultPicturesSaveFolder + "/img" + Integer.toString(cont+1) + ".jpg";
+            File file1 = new File(path1);
+            File file2 = new File(path2);
+            if (!file1.exists() || !file2.exists())break;
+            processORB();
+            FileOutputStream fos = null;
+            if (img!=null) {
+                try {
+                    fos = new FileOutputStream(defaultPicturesSaveFolder + "/resultImg" + Integer.toString(cont) + "_" + Integer.toString(cont + 1) + ".png");
 
-        String fileName =
+                    img.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-                defaultPicturesSaveFolder + "/sample_" + currentDateandTime + ".jpg";
+                } catch (java.io.IOException e) {
+                    Log.e("PictureDemo", "Exception in photoCallback", e);
+                } finally {
+                    try {
+                        if (fos != null) {
+                            fos.flush();
+                            fos.close();
+                        }
+                    } catch (java.io.IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            cont++;
+        }
 
-
-        mOpenCvCameraView.takePicture(fileName);
-        if(path1 != null && path2 !=null)processORB();
-        if (pathFlag) path1 = fileName; else path2 = fileName;
-        pathFlag = !pathFlag;
-        Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
-
-
-		return false;
+        return false;
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -264,35 +386,96 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     }
 
     @Override
-    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    public synchronized Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+
+    //    Log.i(TAG,"Start of onCameraFrame : " +  Long.toString(System.currentTimeMillis()));
+    //    long time2 = System.nanoTime();
+        mRgba = inputFrame.rgba();
 
 
-        if (mGray2 == null){
-            mGray = inputFrame.gray();
-            mGray2 = mGray;
+        Log.i(TAG, "framCont : " + contFrames);
+
+
+           if (contFrames == FrameSkip){
+            //Log.i(TAG,"Start of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
+            //long time = System.nanoTime();
+
+               Mat gray = inputFrame.gray();
+               if (mGray.cols() == 0 && mGray.rows() == 0){
+                   mGray = inputFrame.gray();
+                 //  Log.i(TAG, "Frame = mgray1");
+                   contFrames = 0;
+               }
+               else {
+
+                   if (mGray2.cols() == 0 && mGray2.rows() == 0){
+                       mGray2 = gray;
+                       contFrames = 0;
+                   //    Log.i(TAG, "frame = mgray2");
+                   }else{
+                   if (pathFlag)  {
+                       mGray = gray;
+                   //    Log.i(TAG, "Frame = mgray1");
+                   }else {
+                    //   Log.i(TAG, "Frame = mgray2");
+                       mGray2 = gray;
+                   }
+                   }
+
+                  // Log.i(TAG,"Mgray and MGray2 " + (mGray!=null) + (mGray2!=null));
+                 //  Log.i(TAG,"Mgray and MGray2 " + mGray.rows() + " " + mGray.cols());
+                 //  Log.i(TAG, "Mgray and MGray2 " + mGray2.rows() + " " + mGray2.cols());
+                   pathFlag = !pathFlag;
+                   runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+
+                           processORB();
+
+
+                       }
+
+                   });
+               }
+              // Log.i(TAG,"End of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
+              // Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
         }
-        else {
-            mGray2 = mGray;
-            mGray = inputFrame.gray();
 
-            Mat m1 = mGray;
-            Mat m2 = mGray2;
+        contFrames++;
+      //  Log.i(TAG,"End of OnCameraFrame : " +  Long.toString(System.currentTimeMillis()));
+      //  Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time2));
+        return mRgba;
+//=======
+//
+//
+//        if (mGray2 == null){
+//            mGray = inputFrame.gray();
+//            mGray2 = mGray;
+//        }
+//        else {
+//            mGray2 = mGray;
+//            mGray = inputFrame.gray();
+//
+//            Mat m1 = mGray;
+//            Mat m2 = mGray2;
+//
+//            mGray = m1;
+//            mGray2 = m2;
+//            if (contFrames++ == FPS){
+//                contFrames = 0;
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                processORB();
+////stuff that updates ui
+//
+//                }
+//            });
+//        }
+//        }
+//        return inputFrame.rgba();
+//>>>>>>> bd2d8ed33eee3a83a68eb947e6075669a861038e
 
-            mGray = m1;
-            mGray2 = m2;
-            if (contFrames++ == FrameSkip){
-                contFrames = 0;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                processORB();
-//stuff that updates ui
-
-                }
-            });
-        }
-        }
-        return inputFrame.rgba();
     }
 
 
