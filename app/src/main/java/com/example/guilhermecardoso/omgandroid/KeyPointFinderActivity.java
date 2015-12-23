@@ -48,7 +48,7 @@ import Services.ServiceGyroscope;
 
 
 
-public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
+public class KeyPointFinderActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
     public static ImageView imageView;
     public static ImageView imageView2;
     private ServiceGPSTracker serviceGPS;
@@ -90,7 +90,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
                 {
                     Log.i(TAG, "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
-                    mOpenCvCameraView.setOnTouchListener(MainActivity.this);
+                    mOpenCvCameraView.setOnTouchListener(KeyPointFinderActivity.this);
                 } break;
                 default:
                 {
@@ -106,7 +106,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         Log.i(TAG, "Called onCreate");
 
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
+        //setContentView(R.layout.keypoint_finder_activity);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (!OpenCVLoader.initDebug()) {
