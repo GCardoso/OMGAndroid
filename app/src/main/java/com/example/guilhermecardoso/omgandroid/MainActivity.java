@@ -1,5 +1,6 @@
 package com.example.guilhermecardoso.omgandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,21 +28,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonCalibrate.setOnClickListener(this);
         buttonKeyPointFinder.setOnClickListener(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.button_calibrate:
-                Log.i(TAG,"Chamou Calibrar!");
+                Log.i(TAG, "Chamou Calibrar!");
+                Intent myIntent = new Intent(this, CameraCalibrationActivity.class);
+
+                this.startActivity(myIntent);
             break;
 
             case R.id.button_keypoint_finder:
