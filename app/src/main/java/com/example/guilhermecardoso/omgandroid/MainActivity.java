@@ -42,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.button_keypoint_finder:
                 Log.i(TAG,"Chamou Finder!");
+                Intent myIntent2 = new Intent(this, KeyPointFinderActivity.class);
+
+                this.startActivity(myIntent2);
+
                 break;
         }
     }

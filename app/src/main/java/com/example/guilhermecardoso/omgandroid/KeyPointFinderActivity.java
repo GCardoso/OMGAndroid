@@ -124,7 +124,7 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
         previewHolder = preview.getHolder();
 */
 
-        setContentView(R.layout.cameraview);
+        setContentView(R.layout.keypoint_finder_activity);
         this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
         this.imageView2 = (ImageView) this.findViewById(R.id.imageViewPhotoTaken2);
         mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
@@ -290,6 +290,7 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
             }
             catch(IOException ioe)
             {}
+            catch(NullPointerException npe){}
         }
     }
 

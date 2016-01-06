@@ -42,7 +42,15 @@
         <activity
             android:name=".CameraCalibrationActivity"
             android:label="@string/title_activity_camera_calibration"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="landscape">
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".KeyPointFinderActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_keypoint_finder"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@
     <string name="button_keypoint_finder">Find Keypoints</string>
     <string name="button_calibrate">Calibrate Camera</string>
     <string name="title_activity_camera_calibration">CameraCalibrationActivity</string>
+    <string name="title_activity_keypoint_finder">KeyPointFinderActivity</string>
 
 
     <string name="action_calibrate">Calibrate</string>

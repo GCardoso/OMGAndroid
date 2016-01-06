@@ -131,10 +131,10 @@ public class CameraCalibrator {
 
     private void findPattern(Mat grayFrame) {
 
-        mPatternWasFound = Calib3d.findChessboardCorners(grayFrame,mPatternSize,
-                mCorners,Calib3d.CALIB_CB_FAST_CHECK);
-                //Calib3d.findCirclesGridDefault(grayFrame, mPatternSize,
-                //mCorners, Calib3d.CALIB_CB_ASYMMETRIC_GRID);
+        mPatternWasFound = //Calib3d.findChessboardCorners(grayFrame,mPatternSize,
+                //mCorners,Calib3d.CALIB_CB_FAST_CHECK);
+                Calib3d.findCirclesGridDefault(grayFrame, mPatternSize,
+                mCorners, Calib3d.CALIB_CB_ASYMMETRIC_GRID);
     }
 
     public void addCorners() {
@@ -149,6 +149,9 @@ public class CameraCalibrator {
 
     private void renderFrame(Mat rgbaFrame) {
         drawPoints(rgbaFrame);
+
+        Core.putText(rgbaFrame, "Captured: " + mCornersBuffer.size(), new Point(rgbaFrame.cols() / 3 * 2, rgbaFrame.rows() * 0.1),
+                Core.FONT_HERSHEY_SIMPLEX, 1.0, new Scalar(255, 255, 0));
 
 //        Imgproc.putText(rgbaFrame, "Captured: " + mCornersBuffer.size(), new Point(rgbaFrame.cols() / 3 * 2, rgbaFrame.rows() * 0.1),
 //                Core.FONT_HERSHEY_SIMPLEX, 1.0, new Scalar(255, 255, 0));
