@@ -14,9 +14,10 @@ public abstract class CalibrationResult {
     private static final int CAMERA_MATRIX_ROWS = 3;
     private static final int CAMERA_MATRIX_COLS = 3;
     private static final int DISTORTION_COEFFICIENTS_SIZE = 5;
+    private static final String prefs = "CalibrationPref";
 
     public static void save(Activity activity, Mat cameraMatrix, Mat distortionCoefficients) {
-        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(prefs,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         double[] cameraMatrixArray = new double[CAMERA_MATRIX_ROWS * CAMERA_MATRIX_COLS];
@@ -41,7 +42,7 @@ public abstract class CalibrationResult {
     }
 
     public static boolean tryLoad(Activity activity, Mat cameraMatrix, Mat distortionCoefficients) {
-        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(prefs,Context.MODE_PRIVATE);
         if (sharedPref.getFloat("0", -1) == -1) {
             Log.i(TAG, "No previous calibration results found");
             return false;

@@ -82,6 +82,8 @@ public class FeatureDetectorAlgorithms {
     public static Bitmap ORB(Mat firstPath, Mat secondPath,Context context){
     //public static Bitmap ORB(String firstPath, String secondPath) {
 
+
+
         SQLiteManager sqlm = new SQLiteManager(context);
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.ORB);
         DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);
@@ -282,6 +284,16 @@ public class FeatureDetectorAlgorithms {
 
         Bitmap imageMatched = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(), Bitmap.Config.RGB_565);//need to save bitmap
         Utils.matToBitmap(outputImg, imageMatched);
+        return imageMatched;
+    }
+
+    public static Bitmap undistortPhotos(Mat cameraMatrix,Mat coeficients,String firstPath,Context context,CameraCalibrator mCalibrator){
+        Mat srcMAT = Highgui.imread(firstPath) ;
+        Mat dstMAT = new Mat(srcMAT.size(), srcMAT.type());
+        Imgproc.undistort(srcMAT, dstMAT,
+                mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients());
+        Bitmap imageMatched = Bitmap.createBitmap(dstMAT.cols(), dstMAT.rows(), Bitmap.Config.RGB_565);//need to save bitmap
+        Utils.matToBitmap(dstMAT, imageMatched);
         return imageMatched;
     }
 

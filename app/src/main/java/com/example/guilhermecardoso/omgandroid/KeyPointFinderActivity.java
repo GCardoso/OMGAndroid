@@ -3,6 +3,7 @@ package com.example.guilhermecardoso.omgandroid;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.hardware.Camera.Size;
 import android.os.Bundle;
@@ -42,7 +43,11 @@ import java.util.ListIterator;
 
 import DBhelpers.SQLiteManager;
 import OpenCV.OpenCVcameraView;
+import Services.CalibrationFrameRender;
+import Services.CalibrationResult;
+import Services.CameraCalibrator;
 import Services.FeatureDetectorAlgorithms;
+import Services.OnCameraFrameRender;
 import Services.ServiceGPSTracker;
 import Services.ServiceGyroscope;
 
@@ -61,6 +66,13 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
     private static String path1,path2;
     private static File defaultPicturesSaveFolder;
     private static int contFrames = 0;
+
+    private CameraCalibrator mCalibrator;
+    private OnCameraFrameRender mOnCameraFrameRender;
+    private int mWidth;
+    private int mHeight;
+    Mat cameraMatrix;
+    Mat coeficients;
 
     private static final int FrameSkip = 10;
 
@@ -142,12 +154,13 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
 
 
     private synchronized void processORB(){
-        Log.i(TAG,"Start of processOrb : " +  Long.toString(System.currentTimeMillis()));
-        long time = System.nanoTime();
+
+
+
         //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
 
         //img = FeatureDetectorAlgorithms.ORB(path1   , path2);
-             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2,this);
+             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2, this);
 
 
         if (pathFlag && mGray.cols() > 0) {
@@ -156,9 +169,7 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
             imageView2.setImageBitmap(image);
         }
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
-    contFrames =0;
-        Log.i(TAG,"End of process Orb : " +  Long.toString(System.currentTimeMillis()));
-        Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
+
 
 
     }
@@ -257,7 +268,7 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
 
-        File f = getDatabasePath("photoGuideDB.db");
+     /*   File f = getDatabasePath("photoGuideDB.db");
         FileInputStream fis=null;
         FileOutputStream  fos=null;
 
@@ -291,7 +302,12 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
             catch(IOException ioe)
             {}
             catch(NullPointerException npe){}
-        }
+        }*/
+    }
+
+    private synchronized void processUndistort(){
+        img = FeatureDetectorAlgorithms.undistortPhotos(cameraMatrix, coeficients, path1, this,mCalibrator);
+
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -299,14 +315,47 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
     public boolean onTouch(View v, MotionEvent event) {
 
         int cont = 1;
-
         while (true){
             Log.e(TAG,"Loop do while " + cont);
             path1 = defaultPicturesSaveFolder + "/img" + Integer.toString(cont) + ".jpg";
-            path2 = defaultPicturesSaveFolder + "/img" + Integer.toString(cont+1) + ".jpg";
+
+            File file1 = new File(path1);
+
+            if (!file1.exists())break;
+
+            processUndistort();
+            FileOutputStream fos = null;
+            if (img!=null) {
+                try {
+                    fos = new FileOutputStream(defaultPicturesSaveFolder + "/undistortedIMG" + Integer.toString(cont) + ".png");
+
+                    img.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                } catch (java.io.IOException e) {
+                    Log.e("PictureDemo", "Exception in photoCallback", e);
+                } finally {
+                    try {
+                        if (fos != null) {
+                            fos.flush();
+                            fos.close();
+                        }
+                    } catch (java.io.IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            cont++;
+        }
+
+        cont = 1;
+        while (true){
+            Log.e(TAG,"Loop do while " + cont);
+            path1 = defaultPicturesSaveFolder + "/undistortedIMG" + Integer.toString(cont) + ".jpg";
+            path2 = defaultPicturesSaveFolder + "/undistortedIMG" + Integer.toString(cont+1) + ".jpg";
             File file1 = new File(path1);
             File file2 = new File(path2);
             if (!file1.exists() || !file2.exists())break;
+
             processORB();
             FileOutputStream fos = null;
             if (img!=null) {
@@ -337,9 +386,21 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
     public void onCameraViewStarted(int width, int height) {
         mGray = new Mat();
         mGray2 = new Mat();
+        cameraMatrix = new Mat();
+        coeficients = new Mat();
+        CalibrationResult.tryLoad(KeyPointFinderActivity.this, cameraMatrix, coeficients);
 
+        if (mWidth != width || mHeight != height) {
+            mWidth = width;
+            mHeight = height;
+            mCalibrator = new CameraCalibrator(mWidth, mHeight);
+            if (CalibrationResult.tryLoad(this, mCalibrator.getCameraMatrix(), mCalibrator.getDistortionCoefficients())) {
+                mCalibrator.setCalibrated();
+            }
+
+            mOnCameraFrameRender = new OnCameraFrameRender(new CalibrationFrameRender(mCalibrator));
+        }
     }
-
     public void onCameraViewStopped() {
     }
 
@@ -351,10 +412,10 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
         mRgba = inputFrame.rgba();
 
 
-        Log.i(TAG, "framCont : " + contFrames);
+      /*  Log.i(TAG, "framCont : " + contFrames);
 
 
-           if (contFrames == FrameSkip){
+          // if (contFrames == FrameSkip){
             //Log.i(TAG,"Start of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
             //long time = System.nanoTime();
 
@@ -394,14 +455,14 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
                        }
 
                    });
-               }
+      //         }
               // Log.i(TAG,"End of Frame Capture : " +  Long.toString(System.currentTimeMillis()));
               // Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time));
         }
 
-        contFrames++;
+       // contFrames++;
       //  Log.i(TAG,"End of OnCameraFrame : " +  Long.toString(System.currentTimeMillis()));
-      //  Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time2));
+      //  Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time2));*/
         return mRgba;
     }
 }
