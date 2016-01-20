@@ -2,6 +2,7 @@ package com.example.guilhermecardoso.omgandroid;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.Toast;
@@ -59,9 +61,10 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
     private ServiceGPSTracker serviceGPS;
     private ServiceGyroscope serviceXYZ;
     private SQLiteManager dbManager;
-    private TableHelper tableHelper;
+
+    private ProgressDialog progress;
     private static String TAG = "Main Activity";
-    TableLayout mainTable;
+
     private static boolean pathFlag = true;
     private static String path1,path2;
     private static File defaultPicturesSaveFolder;
@@ -87,6 +90,9 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
     private SubMenu mColorEffectsMenu;
     private MenuItem[] mResolutionMenuItems;
     private SubMenu mResolutionMenu;
+    private Button runOrb;
+    private Button runDump;
+    private Button runUndistort;
 
     public Mat                    mGray;
 
@@ -128,16 +134,10 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
 
         serviceGPS = new ServiceGPSTracker(this);
         serviceXYZ = new ServiceGyroscope(this.getApplicationContext());
-        tableHelper = new TableHelper(this);
-        //mainTable = (TableLayout) findViewById(R.id.main_table);
 
-        //tableHelper.createTable(mainTable);
-        /*preview = (SurfaceView) findViewById(R.id.preview);
-        previewHolder = preview.getHolder();
-*/
 
         setContentView(R.layout.keypoint_finder_activity);
-        this.imageView = (ImageView) this.findViewById(R.id.imageViewPhotoTaken);
+
         this.imageView2 = (ImageView) this.findViewById(R.id.imageViewPhotoTaken2);
         mOpenCvCameraView = (OpenCVcameraView) findViewById(R.id.openCVCameraView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -152,7 +152,6 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
 
     }
 
-
     private synchronized void processORB(){
 
 
@@ -160,16 +159,16 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
         //if (mGray.equals(mGray2)) return null;else {Log.i(TAG,"blablabla");return
 
         //img = FeatureDetectorAlgorithms.ORB(path1   , path2);
-             Bitmap img = FeatureDetectorAlgorithms.ORB(mGray, mGray2, this);
+        img = FeatureDetectorAlgorithms.ORB(path1,  path2, this);
 
 
-        if (pathFlag && mGray.cols() > 0) {
+       /* if (pathFlag && mGray.cols() > 0) {
             Bitmap image = Bitmap.createBitmap(mGray.cols(), mGray.rows(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(mGray, image);
             imageView2.setImageBitmap(image);
         }
         if (img==null) { Log.i(TAG,"Sem Matches para mostrar");} else imageView.setImageBitmap(img);
-
+*/
 
 
     }
@@ -257,18 +256,8 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
 
     }
 
-    protected void onResume() {
-        super.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mLoaderCallback);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
-
-     /*   File f = getDatabasePath("photoGuideDB.db");
+    public void dbDump(View v){
+        File f = getDatabasePath("photoGuideDB.db");
         FileInputStream fis=null;
         FileOutputStream  fos=null;
 
@@ -302,21 +291,64 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
             catch(IOException ioe)
             {}
             catch(NullPointerException npe){}
-        }*/
+        }
     }
 
-    private synchronized void processUndistort(){
-        img = FeatureDetectorAlgorithms.undistortPhotos(cameraMatrix, coeficients, path1, this,mCalibrator);
-
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-
+    public void runOrb(View v){
         int cont = 1;
+        progress.setMessage("Appling orb and Matching, Please wait.");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setIndeterminate(false);
+        progress.setProgress(0);
+        progress.setMax(140);
         while (true){
             Log.e(TAG,"Loop do while " + cont);
+            path1 = defaultPicturesSaveFolder + "/undistortedIMG" + Integer.toString(cont) + ".png";
+            path2 = defaultPicturesSaveFolder + "/undistortedIMG" + Integer.toString(cont+1) + ".png";
+            File file1 = new File(path1);
+            File file2 = new File(path2);
+            if (!file1.exists() || !file2.exists())break;
+
+            processORB();
+            FileOutputStream fos = null;
+            if (img!=null) {
+                try {
+                    fos = new FileOutputStream(defaultPicturesSaveFolder + "/resultImgs/resultIMG" + Integer.toString(cont) + "_" + Integer.toString(cont + 1) + ".png");
+
+                    img.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                } catch (java.io.IOException e) {
+                    Log.e("PictureDemo", "Exception in photoCallback", e);
+                } finally {
+                    try {
+                        if (fos != null) {
+                            fos.flush();
+                            fos.close();
+                        }
+                    } catch (java.io.IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            progress.setProgress(cont);
+            cont++;
+        }
+    }
+
+    public void runUndistort(View v){
+        int cont = 1;
+
+        progress=new ProgressDialog(this);
+        progress.setMessage("Undistorting Images, Please wait.");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setIndeterminate(false);
+        progress.setProgress(0);
+        progress.setMax(140);
+        progress.show();
+
+        while (true){
+            Log.e(TAG, "Loop do while " + cont);
+
             path1 = defaultPicturesSaveFolder + "/img" + Integer.toString(cont) + ".jpg";
 
             File file1 = new File(path1);
@@ -344,43 +376,25 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
                     }
                 }
             }
+            progress.setProgress(cont);
             cont++;
         }
+    }
+    protected void onResume() {
+        super.onResume();
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this, mLoaderCallback);
+    }
 
-        cont = 1;
-        while (true){
-            Log.e(TAG,"Loop do while " + cont);
-            path1 = defaultPicturesSaveFolder + "/undistortedIMG" + Integer.toString(cont) + ".jpg";
-            path2 = defaultPicturesSaveFolder + "/undistortedIMG" + Integer.toString(cont+1) + ".jpg";
-            File file1 = new File(path1);
-            File file2 = new File(path2);
-            if (!file1.exists() || !file2.exists())break;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+    }
 
-            processORB();
-            FileOutputStream fos = null;
-            if (img!=null) {
-                try {
-                    fos = new FileOutputStream(defaultPicturesSaveFolder + "/resultImg" + Integer.toString(cont) + "_" + Integer.toString(cont + 1) + ".png");
+    private synchronized void processUndistort(){
+        img = FeatureDetectorAlgorithms.undistortPhotos(cameraMatrix, coeficients, path1, this,mCalibrator);
 
-                    img.compress(Bitmap.CompressFormat.PNG, 100, fos);
-
-                } catch (java.io.IOException e) {
-                    Log.e("PictureDemo", "Exception in photoCallback", e);
-                } finally {
-                    try {
-                        if (fos != null) {
-                            fos.flush();
-                            fos.close();
-                        }
-                    } catch (java.io.IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            cont++;
-        }
-
-        return false;
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -464,5 +478,10 @@ public class KeyPointFinderActivity extends Activity implements CvCameraViewList
       //  Log.i(TAG,"End of OnCameraFrame : " +  Long.toString(System.currentTimeMillis()));
       //  Log.i(TAG,"Time taken: " + Long.toString(System.nanoTime() - time2));*/
         return mRgba;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return false;
     }
 }

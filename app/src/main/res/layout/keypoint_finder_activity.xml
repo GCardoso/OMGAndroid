@@ -8,15 +8,24 @@
         android:layout_width="fill_parent"
         android:layout_weight="1"
         android:layout_height="fill_parent">
-
-        <ImageView
-            android:id="@+id/imageViewPhotoTaken"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="fill_vertical"
-            android:src="@mipmap/ic_launcher" >
-        </ImageView>
-
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_dump_db"
+            android:onClick="dbDump"
+        />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_run_undistortion"
+            android:onClick="runUndistort"
+        />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_run_orb_matching"
+            android:onClick="runOrb"
+        />
     </LinearLayout>
     <LinearLayout
         android:layout_weight="1"

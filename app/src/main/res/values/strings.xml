@@ -23,4 +23,7 @@
     <string name="please_wait">Please, wait</string>
     <string name="original">Original</string>
     <string name="undistorted">Undistorted</string>
+    <string name="button_dump_db">Dump DB</string>
+    <string name="button_run_undistortion">Undistort</string>
+    <string name="button_run_orb_matching">Run Orb</string>
 </resources>

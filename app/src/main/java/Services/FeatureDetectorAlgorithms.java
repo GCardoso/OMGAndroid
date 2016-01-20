@@ -79,8 +79,8 @@ public class FeatureDetectorAlgorithms {
 //        return imageMatched;
 //    }
 
-    public static Bitmap ORB(Mat firstPath, Mat secondPath,Context context){
-    //public static Bitmap ORB(String firstPath, String secondPath) {
+    //public static Bitmap ORB(Mat firstPath, Mat secondPath,Context context){
+    public static Bitmap ORB(String firstPath, String secondPath,Context context) {
 
 
 
@@ -92,7 +92,7 @@ public class FeatureDetectorAlgorithms {
 
         //first image
 
-        Mat img_object = //Highgui.imread
+        Mat img_object = Highgui.imread
                 (firstPath);
         Image image1 = new Image();
 
@@ -104,7 +104,7 @@ public class FeatureDetectorAlgorithms {
         descriptor.compute(img_object, keypoints_object, descriptors1);
 
         //second image
-        Mat img_scene = //Highgui.imread
+        Mat img_scene = Highgui.imread
                 (secondPath);
         Image image2 = new Image();
 
@@ -266,6 +266,9 @@ public class FeatureDetectorAlgorithms {
       //  for (int i = 0; i < goodMatches.size(); i++) {
    //         long id = sqlm.addDMatch((int)objkeypoints_ID[i],(int)scnkeypoints_ID[i],goodMatches.get(i));
      //   }
+
+
+
 
         objkeypoints_ID = sqlm.addKeypointMany((int)img1_ID,listOfGoodKeypointsObj);
         scnkeypoints_ID = sqlm.addKeypointMany((int)img2_ID,listOfGoodKeypointsScene);
